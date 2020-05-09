@@ -1,21 +1,59 @@
 import React, {useState, useEffect} from 'react';
 import {MasukWaktuLogo} from './MasukWaktuLogo';
-import {FiSettings, FiEdit, FiEdit2} from 'react-icons/fi'
+import {FiSettings, FiEdit2} from 'react-icons/fi'
+import {WaktuSolatDiv} from './WaktuSolatDiv'
+
+const initialWaktuSolatToday = {
+  imsak: '00:00',
+  subuh: '00:00',
+  syuruk: '00:00',
+  zohor: '00:00',
+  asar: '00:00',
+  maghrib: '00:00',
+  isyak: '00:00'
+}
+
 
 function App() {
+  const [countdown, setCountdown] = useState('00:05:43')
+  const [seconds, setSeconds] = useState(0)
+
+  const [waktuSolatToday, setWaktuSolatToday] = useState(initialWaktuSolatToday);
+  const [isLoading, setIsLoading] = useState('none')
+
   useEffect(() => {    
     const counter = setInterval(function () {
-      const seconds = Math.floor(Math.random() * 60)
-      const timeToNext = `00:05:${seconds < 10 ? '0'+seconds: seconds}`
+      if (seconds >= 59) {
+        setSeconds(0)
+      } else {
+        setSeconds(seconds + 1)
+      }
+      const timeToNext = `00:05:${seconds < 10 ? '0' + seconds : seconds }`
       setCountdown(timeToNext)
       // console.log(timeToNext)
+
     }, 1000)
+
+    // GET https://_____
+    // 
+    setIsLoading('LOADING')
+    // setTimeout(function () {
+      setWaktuSolatToday({
+        imsak: '05:43',
+        subuh: '05:53',
+        syuruk: '07:02',
+        zohor: '13:13',
+        asar: '16:32',
+        maghrib: '19:20',
+        isyak: '20:31'
+      })
+      setIsLoading('DONE');
+    // }, 200)
     return () => {
       clearInterval(counter)
     }
-  }, [])
+  }, [seconds])
 
-  const [countdown, setCountdown] = useState('00:05:43')
 
   return (
     <div className="App">
@@ -61,44 +99,28 @@ function App() {
         </div>
       </div>
 
-      <div style={{display: 'flex'}}>
-        <div>
-          <div>IMSAK</div>
-          <div>
-            5:43
-            <span>am</span>
-          </div>
+      <footer style={{position: 'fixed', bottom: '0'}}>
+        {isLoading === 'DONE'
+        &&
+        <div style={{display: 'flex'}}>
+          <WaktuSolatDiv name="IMSAK"   time={waktuSolatToday.imsak} ampm="am"/>
+          <WaktuSolatDiv name="SUBUH"   time={waktuSolatToday.subuh} ampm="am"/>
+          <WaktuSolatDiv name="SYURUK"  time={waktuSolatToday.syuruk} ampm="am"/>
+          <WaktuSolatDiv name="ZOHOR"   time={waktuSolatToday.zohor} ampm="pm"/>
+          <WaktuSolatDiv name="ASAR"    time={waktuSolatToday.asar} ampm="pm"/>
+          <WaktuSolatDiv name="MAGHRIB" time={waktuSolatToday.maghrib} ampm="pm"/>
+          <WaktuSolatDiv name="ISYAK"   time={waktuSolatToday.isyak} ampm="pm"/>
         </div>
-        <div>
-          SUBUH
-          5:53 am
-        </div>
-        <div>
-          SYURUK
-          7:02 am
-        </div>
-        <div>
-          ZOHOR
-          1:13 pm
-        </div>
-        <div>
-          ASAR
-          4:32 pm
-        </div>
-        <div>
-          MAGHRIB
-          7:20 pm
-        </div>
-        <div>
-          ISYAK
-          8:31 pm
-        </div>,
-      </div>
+        }
 
-      <div>
-        <div>MASUKWAKTU</div>
-        Looking for sponsor about RM3k per year
-      </div>
+        <div style={{textAlign: 'center',padding: '8px 0', backgroundColor: '#000', color: '#fff', letterSpacing: '1px'}}>
+          <MasukWaktuLogo size={18} color='#ddd'/>
+          {' '}
+          mencari penaja <strong>RM5k</strong> setahun.
+          {' '}
+          <span style={{textDecoration: 'underline', color: '#ccc', fontSize: '12px', cursor: 'pointer'}}>selanjutnya</span>
+        </div>
+      </footer>
     </div>
   );
 }
