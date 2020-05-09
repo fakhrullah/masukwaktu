@@ -1,9 +1,14 @@
 import React from 'react';
+import {MasukWaktuLogo} from './MasukWaktuLogo';
 
 function App() {
   return (
     <div className="App">
-      <div>MASUKWAKTU</div>
+      <header style={{textAlign: 'center'}}>
+        <div style={{backgroundColor: '#c4c4c4', padding: '16px', display: 'inline-block'}}>
+          <MasukWaktuLogo size={24} color='#767676' />
+        </div>
+      </header>
       <div>*</div>
       <div>00:05:43</div>
       <div>
