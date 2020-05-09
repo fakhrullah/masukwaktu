@@ -13,12 +13,15 @@ const initialWaktuSolatToday = {
   isyak: '00:00'
 }
 
+const initialLocation = {id: 'kuala-lumpur_wilayah', name: 'Kuala Lumpur', state: 'Wilayah', zone: 'kl',
+  othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR']}
 
 function App() {
   const [countdown, setCountdown] = useState('00:05:43')
   const [seconds, setSeconds] = useState(0)
 
   const [waktuSolatToday, setWaktuSolatToday] = useState(initialWaktuSolatToday);
+  const [location, setLocation] = useState(initialLocation)
   const [isLoading, setIsLoading] = useState('none')
 
   useEffect(() => {    
@@ -36,8 +39,12 @@ function App() {
 
     // GET https://_____
     // 
-    setIsLoading('LOADING')
-    // setTimeout(function () {
+      setIsLoading('LOADING')
+      setLocation({
+        id: 'subang-jaya_selangor', name: 'Subang Jaya', state: 'Selangor', zone: 'SGHR01',
+  othersInSameZone: ['SUBANG JAYA', 'PETALING JAYA', 'GOMBAK', 'HULU LANGAT', 'SEPANG',
+    'HULU SELANGOR', 'SHAH ALAM']
+      })
       setWaktuSolatToday({
         imsak: '05:43',
         subuh: '05:53',
@@ -48,12 +55,17 @@ function App() {
         isyak: '20:31'
       })
       setIsLoading('DONE');
-    // }, 200)
     return () => {
       clearInterval(counter)
     }
   }, [seconds])
 
+  const chooseLocation = () => {
+    console.group('modal-to-choose-place')
+    console.info('SHOW Modal to choose location')
+    console.table([['selangor', 'sghr01'],['selangor', 'sghr02'], ['terengganu', 'setiu']])
+    console.groupEnd()
+  }
 
   return (
     <div className="App">
@@ -83,9 +95,11 @@ function App() {
         Sebelum Masuk Waktu 
         <span style={{fontWeight: 'bold'}}> SUBUH </span>
         di
-        <span style={{fontWeight: 'bold', textDecoration: 'underline'}}> SUBANG JAYA</span>
-        <span style={{width: '24px', height: '24px', padding: '0px', backgroundColor: '#333', borderRadius: '50%', position: 'relative', 
-          display:'inline-block', textAlign: 'center', top: '-12px'}}>
+        <span style={{fontWeight: 'bold', textDecoration: 'underline'}}> {location.name}</span>
+        <span 
+          onClick={chooseLocation}
+          style={{width: '24px', height: '24px', padding: '0px', backgroundColor: '#333', borderRadius: '50%', position: 'relative', 
+          display:'inline-block', textAlign: 'center', top: '-12px', cursor: 'pointer'}}>
           <FiEdit2 color="#fff" size="14" style={{position: 'absolute', right: '4px', top: '4px'}}/>
         </span>
       </div>
@@ -94,8 +108,7 @@ function App() {
         dan kawasan-kawasan yang sama waktu dengannya
         </div>
         <div>
-        SUBANG JAYA | PETALING JAYA | GOMBAK | HULU LANGAT | SEPANG |
-        HULU SELANGOR | SHAH ALAM
+        {location.othersInSameZone.join(' | ')}
         </div>
       </div>
 
