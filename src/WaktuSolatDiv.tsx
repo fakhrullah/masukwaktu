@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 const WaktuSolat = styled.div`
   background-color: #c4c4c4;
@@ -19,24 +19,24 @@ const WaktuSolat = styled.div`
     color: #000;
     font-size: 18px;
   }
-`
+`;
 
 interface WaktuSolatDivProp{
-    name: String;
-    time: String;
-    ampm: String;
+  name: String;
+  time: String;
+  ampm: String;
 }
 
 const WaktuSolatDiv = (prop: WaktuSolatDivProp) => (
-    <WaktuSolat>
-        <div className='name'>{prop.name || '0'}</div>
-        <div>
-        <span className='time'>{prop.time}</span>
-        <span className='ampm'> {prop.ampm}</span>
-        </div>
-    </WaktuSolat>
-)
+  <WaktuSolat>
+    <div className="name">{prop.name || '0'}</div>
+    <div>
+      <span className="time">{prop.time}</span>
+      <span className="ampm"> {prop.ampm}</span>
+    </div>
+  </WaktuSolat>
+);
 
 export {
-    WaktuSolatDiv
-}
+  WaktuSolatDiv,
+};
