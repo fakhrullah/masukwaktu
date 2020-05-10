@@ -15,18 +15,24 @@ interface SameZoneProps {
   othersLocationInSameZone: Array<String>
 }
 
+const SameZoneDiv = styled.div`
+  color: #c5c5c5;
+  line-height: 32px;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 16px;
+`
+
 const SameZone = (props: SameZoneProps) => (
-  <div style={{
-    textAlign: 'center', color: '#c5c5c5', lineHeight: '32px', maxWidth: '600px', margin: '0 auto',
-  }}
-  >
+  <SameZoneDiv>
     <div>
       dan kawasan-kawasan yang sama waktu dengannya
     </div>
     <div>
       {props.othersLocationInSameZone.join(' | ')}
     </div>
-  </div>
+  </SameZoneDiv>
 );
 
 // -------------------------
