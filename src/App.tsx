@@ -74,7 +74,7 @@ function App() {
     return () => {
       clearInterval(counter);
     };
-  }, [seconds]);
+  }, [nextSolat, seconds, waktuSolatToday.imsak, location.id]);
 
   const chooseLocation = () => {
     console.group('modal-to-choose-place');
