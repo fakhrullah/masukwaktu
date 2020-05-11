@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import './assets/SquadaOne-Monospace.otf';
 
 ReactDOM.render(
   <React.StrictMode>

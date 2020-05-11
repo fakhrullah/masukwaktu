@@ -98,7 +98,7 @@ function App() {
       <div style={{ width: '100%', textAlign: 'center', position: 'relative' }}>
         <div style={{
           fontSize: '20vw',
-          fontFamily: 'Squada One',
+          fontFamily: 'SquadaOne',
           margin: '32px 0 32px 0',
           letterSpacing: '0.1em',
           color: '#dfdfdf',
@@ -112,7 +112,7 @@ function App() {
         </div>
         <div style={{
           fontSize: '20vw',
-          fontFamily: 'Squada One',
+          fontFamily: 'SquadaOne',
           margin: '32px 0 32px 0',
           letterSpacing: '0.1em',
           clipPath: 'inset(100% 50% 100% 100%)',
@@ -125,7 +125,7 @@ function App() {
         </div>
         <div style={{
           fontSize: '20vw',
-          fontFamily: 'Squada One',
+          fontFamily: 'SquadaOne',
           margin: '32px 0 16px 0',
           letterSpacing: '0.1em',
           visibility: 'hidden',
