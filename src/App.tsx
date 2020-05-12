@@ -10,17 +10,19 @@ import { SponsorText } from './SponsorText';
 import Header from './Header';
 
 interface MyType {
-  [key: string]: string;
+  [key: string]: number;
 }
 
 const initialWaktuSolatToday: MyType = {
-  imsak: '00:00',
-  subuh: '00:00',
-  syuruk: '00:00',
-  zohor: '00:00',
-  asar: '00:00',
-  maghrib: '00:00',
-  isyak: '00:00',
+  datestamp: 1589212800,
+  imsak: 1589233260,
+  subuh: 1589233860,
+  syuruk: 1589238060,
+  zohor: 1589260320,
+  asar: 1589272440,
+  maghrib: 1589282400,
+  isyak: 1589286780,
+  subuh_esok: 1589320200,
 };
 
 const initialLocation = {
@@ -51,6 +53,15 @@ function App() {
     return new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hour, 10), parseInt(minutes, 10), 0);
   }
 
+  function convertTimestampToHumanTime(timestamp: number): String {
+    const time: Date = new Date(timestamp * 1000);
+    const hour: number = time.getHours();
+    const minute: number = time.getMinutes();
+    const formattedHour: String = hour > 12 ? `${(hour - 12)}` : `${hour}`;
+    const formattedMinute: String = minute < 10 ? `0${minute}` : `${minute}`;
+    return `${formattedHour}:${formattedMinute}`;
+  }
+
   function logCurrentCountdown() {
     console.log(`${countdownHour}:${countdownMinutes}:${countdownSeconds}`);
   }
@@ -65,10 +76,9 @@ function App() {
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
     // console.log(nextSolatName);
-    const sol = waktuSolatToday[nextSolatName];
-    const nextSolatTime = convertWaktuSolatStringToDate(sol);
-    // nextTime - current time
-    const countdownInSeconds = (nextSolatTime.getTime() - current.getTime()) / 1000;
+    const nextSolatTime = waktuSolatToday[nextSolatName];
+    const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
+
     setCountdownHour(Math.floor(countdownInSeconds / 3600));
     setCountdownMinutes(Math.floor((countdownInSeconds % 3600) / 60));
     setCountdownSeconds(Math.floor(countdownInSeconds % 60));
@@ -83,10 +93,6 @@ function App() {
       } else {
         setSeconds(seconds + 1);
       }
-      // const timeToNext = `00:05:${seconds < 10 ? `0${seconds}` : seconds}`;
-      // setCountdown(timeToNext);
-      // console.log(timeToNext)
-      // logCurrentCountdown();
       calculateCountdown(nextSolat);
     }, 1000);
     return () => {
@@ -107,21 +113,22 @@ function App() {
         'HULU SELANGOR', 'SHAH ALAM'],
     });
     setWaktuSolatToday({
-      imsak: '05:43',
-      subuh: '05:53',
-      syuruk: '07:02',
-      zohor: '13:13',
-      asar: '16:33',
-      maghrib: '19:20',
-      isyak: '20:31',
+      datestamp: 1589212800,
+      imsak: 1589233260,
+      subuh: 1589233860,
+      syuruk: 1589238060,
+      zohor: 1589260320,
+      asar: 1589272440,
+      maghrib: 1589282400,
+      isyak: 1589286780,
+      subuh_esok: 1589320200,
     });
     setIsLoading('DONE');
 
-    setNextSolat('asar');
-
+    setNextSolat('maghrib');
 
     return () => {};
-  }, []);
+  }, [waktuSolatToday.imsak]);
 
   const chooseLocation = () => {
     console.group('modal-to-choose-place');
@@ -200,13 +207,13 @@ function App() {
         {isLoading === 'DONE'
         && (
         <div style={{ display: 'flex' }}>
-          <WaktuSolatDiv name="IMSAK" time={waktuSolatToday.imsak} ampm="am" />
-          <WaktuSolatDiv name="SUBUH" time={waktuSolatToday.subuh} ampm="am" />
-          <WaktuSolatDiv name="SYURUK" time={waktuSolatToday.syuruk} ampm="am" />
-          <WaktuSolatDiv name="ZOHOR" time={waktuSolatToday.zohor} ampm="pm" />
-          <WaktuSolatDiv name="ASAR" time={waktuSolatToday.asar} ampm="pm" />
-          <WaktuSolatDiv name="MAGHRIB" time={waktuSolatToday.maghrib} ampm="pm" />
-          <WaktuSolatDiv name="ISYAK" time={waktuSolatToday.isyak} ampm="pm" />
+          <WaktuSolatDiv name="IMSAK" time={convertTimestampToHumanTime(waktuSolatToday.imsak)} ampm="am" />
+          <WaktuSolatDiv name="SUBUH" time={convertTimestampToHumanTime(waktuSolatToday.subuh)} ampm="am" />
+          <WaktuSolatDiv name="SYURUK" time={convertTimestampToHumanTime(waktuSolatToday.syuruk)} ampm="am" />
+          <WaktuSolatDiv name="ZOHOR" time={convertTimestampToHumanTime(waktuSolatToday.zohor)} ampm="pm" />
+          <WaktuSolatDiv name="ASAR" time={convertTimestampToHumanTime(waktuSolatToday.asar)} ampm="pm" />
+          <WaktuSolatDiv name="MAGHRIB" time={convertTimestampToHumanTime(waktuSolatToday.maghrib)} ampm="pm" />
+          <WaktuSolatDiv name="ISYAK" time={convertTimestampToHumanTime(waktuSolatToday.isyak)} ampm="pm" />
         </div>
         )}
 
