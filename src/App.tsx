@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
 import {
@@ -46,13 +46,6 @@ function App() {
   const [location, setLocation] = useState(initialLocation);
   const [isLoading, setIsLoading] = useState('none');
 
-  function convertWaktuSolatStringToDate(solatTime: string): Date {
-    // console.log(solatTime);
-    const [hour, minutes] = solatTime.split(':');
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hour, 10), parseInt(minutes, 10), 0);
-  }
-
   function convertTimestampToHumanTime(timestamp: number): String {
     const time: Date = new Date(timestamp * 1000);
     const hour: number = time.getHours();
@@ -98,7 +91,7 @@ function App() {
     return () => {
       clearInterval(counter);
     };
-  }, [nextSolat, seconds]);
+  });
 
   useEffect(() => {
     // GET https://_____
