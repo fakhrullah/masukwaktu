@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
 import {
@@ -9,7 +9,11 @@ import {
 import { SponsorText } from './SponsorText';
 import Header from './Header';
 
-const initialWaktuSolatToday = {
+interface MyType {
+  [key: string]: string;
+}
+
+const initialWaktuSolatToday: MyType = {
   imsak: '00:00',
   subuh: '00:00',
   syuruk: '00:00',
@@ -28,13 +32,49 @@ const initialLocation = {
 };
 
 function App() {
-  const [countdown, setCountdown] = useState('00:05:43');
+  const [countdown, setCountdown] = useState('00:00:00');
   const [seconds, setSeconds] = useState(0);
-  const [nextSolat, setNextSolat] = useState('SUBUH');
+  const [nextSolat, setNextSolat] = useState('subuh');
+
+  const [countdownHour, setCountdownHour] = useState(0);
+  const [countdownMinutes, setCountdownMinutes] = useState(0);
+  const [countdownSeconds, setCountdownSeconds] = useState(0);
 
   const [waktuSolatToday, setWaktuSolatToday] = useState(initialWaktuSolatToday);
   const [location, setLocation] = useState(initialLocation);
   const [isLoading, setIsLoading] = useState('none');
+
+  function convertWaktuSolatStringToDate(solatTime: string): Date {
+    // console.log(solatTime);
+    const [hour, minutes] = solatTime.split(':');
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hour, 10), parseInt(minutes, 10), 0);
+  }
+
+  function logCurrentCountdown() {
+    console.log(`${countdownHour}:${countdownMinutes}:${countdownSeconds}`);
+  }
+
+  function displayCountdown(hour: number, minute: number, second: number) : string {
+    const hourTwoDigits = hour >= 10 ? hour : `0${hour}`;
+    const minuteTwoDigits = minute >= 10 ? minute : `0${minute}`;
+    const secondTwoDigits = second >= 10 ? second : `0${second}`;
+    return `${hourTwoDigits}:${minuteTwoDigits}:${secondTwoDigits}`;
+  }
+
+  function calculateCountdown(nextSolatName: string) {
+    const current = new Date();
+    // console.log(nextSolatName);
+    const sol = waktuSolatToday[nextSolatName];
+    const nextSolatTime = convertWaktuSolatStringToDate(sol);
+    // nextTime - current time
+    const countdownInSeconds = (nextSolatTime.getTime() - current.getTime()) / 1000;
+    setCountdownHour(Math.floor(countdownInSeconds / 3600));
+    setCountdownMinutes(Math.floor((countdownInSeconds % 3600) / 60));
+    setCountdownSeconds(Math.floor(countdownInSeconds % 60));
+    setCountdown(displayCountdown(countdownHour, countdownMinutes, countdownSeconds));
+    logCurrentCountdown();
+  }
 
   useEffect(() => {
     const counter = setInterval(() => {
@@ -43,11 +83,18 @@ function App() {
       } else {
         setSeconds(seconds + 1);
       }
-      const timeToNext = `00:05:${seconds < 10 ? `0${seconds}` : seconds}`;
-      setCountdown(timeToNext);
+      // const timeToNext = `00:05:${seconds < 10 ? `0${seconds}` : seconds}`;
+      // setCountdown(timeToNext);
       // console.log(timeToNext)
+      // logCurrentCountdown();
+      calculateCountdown(nextSolat);
     }, 1000);
+    return () => {
+      clearInterval(counter);
+    };
+  }, [nextSolat, seconds]);
 
+  useEffect(() => {
     // GET https://_____
     //
     setIsLoading('LOADING');
@@ -64,17 +111,17 @@ function App() {
       subuh: '05:53',
       syuruk: '07:02',
       zohor: '13:13',
-      asar: '16:32',
+      asar: '16:33',
       maghrib: '19:20',
       isyak: '20:31',
     });
     setIsLoading('DONE');
 
-    setNextSolat('SUBUH');
-    return () => {
-      clearInterval(counter);
-    };
-  }, [nextSolat, seconds, waktuSolatToday.imsak, location.id]);
+    setNextSolat('asar');
+
+
+    return () => {};
+  }, []);
 
   const chooseLocation = () => {
     console.group('modal-to-choose-place');
