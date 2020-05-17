@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
@@ -10,6 +12,8 @@ import {
 import { SponsorText } from './SponsorText';
 import Header from './Header';
 import groupedZones from './data/grouped-zones.json';
+import groupedZonesByStates from './data/group-by-states.json';
+import zones from './data/zones-and-same-zones.json';
 
 interface MyType {
   [key: string]: number;
@@ -65,6 +69,7 @@ function getNextSolatName(currentSolatName: string): string {
   const currentSolatIndex = solatTimeArray.indexOf(currentSolatName);
   return solatTimeArray[currentSolatIndex + 1];
 }
+
 
 ReactModal.setAppElement('#root');
 
@@ -157,6 +162,25 @@ function App() {
     setshowLocationModal(true);
   };
 
+  interface ZoneLocationInterface {
+    id: string,
+    zone: string,
+    lokasi: string,
+    negeri: string,
+    othersInSameZone: Array<string>,
+  }
+
+  const changeLocation = (zone: ZoneLocationInterface) => {
+    setLocation({
+      id: zone.id,
+      name: zone.lokasi,
+      state: zone.negeri,
+      zone: zone.zone,
+      othersInSameZone: zone.othersInSameZone,
+    });
+    setshowLocationModal(false);
+  };
+
   const showSponsorModal = () => {
     console.group('sponsor-modal');
     console.info('SHOW Sponsor Modal');
@@ -247,11 +271,20 @@ function App() {
         overlayClassName="modal-overlay"
       >
         <h2>Pilih Lokasi Zon</h2>
-        {groupedZones.results.map(({ zone, state, location: stateLoc }) => (
-          <div key={zone}>
-            <strong>{zone}</strong> <em>{state}</em>
-            <br />
-            <span>{stateLoc.join(' | ')}</span>
+        {Object.entries(groupedZonesByStates.groupByStates).map(([state, zones]) => (
+          <div key={state.toLowerCase()}>
+            <span>{state}</span>
+            {zones.map((zone) => (
+              (
+                <button
+                  type="button"
+                  key={`${zone.id}`}
+                  onClick={() => changeLocation(zone)}
+                >
+                  {zone.lokasi}
+                </button>
+              )
+            ))}
           </div>
         ))}
       </ReactModal>
