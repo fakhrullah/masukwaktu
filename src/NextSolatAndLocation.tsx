@@ -49,17 +49,19 @@ const NextSolat = (props: NextSolatProps) => <NextSolatDiv>{props.name}</NextSol
 
 // -------------------------
 
-interface SolatLocationProps {
+interface SolatLocationProps{
   name: String
+  onClick: (event: React.MouseEvent<HTMLSpanElement>) => void
 }
 
 const SolatLocationDiv = styled.span`
-    font-weight: bold;
-    text-decoration: underline;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
 `;
 
 const SolatLocation = (props: SolatLocationProps) => (
-  <SolatLocationDiv>{props.name}</SolatLocationDiv>
+  <SolatLocationDiv onClick={props.onClick}>{props.name}</SolatLocationDiv>
 );
 
 

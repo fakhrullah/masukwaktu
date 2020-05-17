@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
+import ReactModal from 'react-modal';
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
 import {
@@ -8,21 +9,24 @@ import {
 } from './NextSolatAndLocation';
 import { SponsorText } from './SponsorText';
 import Header from './Header';
+import groupedZones from './data/grouped-zones.json';
 
 interface MyType {
   [key: string]: number;
 }
 
+const currentTimstamp: number = (new Date()).getTime();
+
 const initialWaktuSolatToday: MyType = {
-  datestamp: 1589212800,
-  imsak: 1589233260,
-  subuh: 1589233860,
-  syuruk: 1589238060,
-  zohor: 1589260320,
-  asar: 1589272440,
-  maghrib: 1589282400,
-  isyak: 1589286780,
-  subuh_esok: 1589320200,
+  datestamp: currentTimstamp,
+  imsak: currentTimstamp,
+  subuh: currentTimstamp,
+  syuruk: currentTimstamp,
+  zohor: currentTimstamp,
+  asar: currentTimstamp,
+  maghrib: currentTimstamp,
+  isyak: currentTimstamp,
+  subuh_tomorrow: currentTimstamp,
 };
 
 const initialLocation = {
@@ -32,6 +36,37 @@ const initialLocation = {
   zone: 'kl',
   othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR'],
 };
+
+function convertTimestampToHumanTime(timestamp: number): string {
+  const time: Date = new Date(timestamp * 1000);
+  const hour: number = time.getHours();
+  const minute: number = time.getMinutes();
+  const formattedHour: String = hour > 12 ? `${(hour - 12)}` : `${hour}`;
+  const formattedMinute: String = minute < 10 ? `0${minute}` : `${minute}`;
+  return `${formattedHour}:${formattedMinute}`;
+}
+
+function displayCountdown(hour: number, minute: number, second: number) : string {
+  const hourTwoDigits = hour >= 10 ? hour : `0${hour}`;
+  const minuteTwoDigits = minute >= 10 ? minute : `0${minute}`;
+  const secondTwoDigits = second >= 10 ? second : `0${second}`;
+  return `${hourTwoDigits}:${minuteTwoDigits}:${secondTwoDigits}`;
+}
+
+function getNextSolatName(currentSolatName: string): string {
+  const solatTimeArray = [
+    'subuh',
+    'syuruk',
+    'zohor',
+    'asar',
+    'maghrib',
+    'isyak',
+    'subuh_esok'];
+  const currentSolatIndex = solatTimeArray.indexOf(currentSolatName);
+  return solatTimeArray[currentSolatIndex + 1];
+}
+
+ReactModal.setAppElement('#root');
 
 function App() {
   const [countdown, setCountdown] = useState('00:00:00');
@@ -46,24 +81,11 @@ function App() {
   const [location, setLocation] = useState(initialLocation);
   const [isLoading, setIsLoading] = useState('none');
 
-  function convertTimestampToHumanTime(timestamp: number): String {
-    const time: Date = new Date(timestamp * 1000);
-    const hour: number = time.getHours();
-    const minute: number = time.getMinutes();
-    const formattedHour: String = hour > 12 ? `${(hour - 12)}` : `${hour}`;
-    const formattedMinute: String = minute < 10 ? `0${minute}` : `${minute}`;
-    return `${formattedHour}:${formattedMinute}`;
-  }
+  // modal states
+  const [showLocationModal, setshowLocationModal] = useState(false);
 
   function logCurrentCountdown() {
     console.log(`${countdownHour}:${countdownMinutes}:${countdownSeconds}`);
-  }
-
-  function displayCountdown(hour: number, minute: number, second: number) : string {
-    const hourTwoDigits = hour >= 10 ? hour : `0${hour}`;
-    const minuteTwoDigits = minute >= 10 ? minute : `0${minute}`;
-    const secondTwoDigits = second >= 10 ? second : `0${second}`;
-    return `${hourTwoDigits}:${minuteTwoDigits}:${secondTwoDigits}`;
   }
 
   function calculateCountdown(nextSolatName: string) {
@@ -71,6 +93,11 @@ function App() {
     // console.log(nextSolatName);
     const nextSolatTime = waktuSolatToday[nextSolatName];
     const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
+
+    // change to next solat
+    if (countdownInSeconds <= 0) {
+      setNextSolat(getNextSolatName(nextSolat));
+    }
 
     setCountdownHour(Math.floor(countdownInSeconds / 3600));
     setCountdownMinutes(Math.floor((countdownInSeconds % 3600) / 60));
@@ -106,19 +133,17 @@ function App() {
         'HULU SELANGOR', 'SHAH ALAM'],
     });
     setWaktuSolatToday({
-      datestamp: 1589212800,
-      imsak: 1589233260,
-      subuh: 1589233860,
-      syuruk: 1589238060,
-      zohor: 1589260320,
-      asar: 1589272440,
-      maghrib: 1589282400,
-      isyak: 1589286780,
-      subuh_esok: 1589320200,
+      datestamp: 1589644800,
+      imsak: 1589664660,
+      subuh: 1589665260,
+      syuruk: 1589670060,
+      zohor: 1589692320,
+      asar: 1589704500,
+      maghrib: 1589714400,
+      isyak: 1589718840,
+      subuh_tomorrow: 1589751660,
     });
     setIsLoading('DONE');
-
-    setNextSolat('maghrib');
 
     return () => {};
   }, [waktuSolatToday.imsak]);
@@ -128,6 +153,8 @@ function App() {
     console.info('SHOW Modal to choose location');
     console.table([['selangor', 'sghr01'], ['selangor', 'sghr02'], ['terengganu', 'setiu']]);
     console.groupEnd();
+
+    setshowLocationModal(true);
   };
 
   const showSponsorModal = () => {
@@ -190,7 +217,7 @@ function App() {
           {' '}
           di
           {' '}
-          <SolatLocation name={location.name} />
+          <SolatLocation name={location.name} onClick={chooseLocation} />
           <ChangeLocationButton onClick={chooseLocation} />
         </div>
         <SameZone othersLocationInSameZone={location.othersInSameZone} />
@@ -212,6 +239,22 @@ function App() {
 
         <SponsorText onClick={showSponsorModal} />
       </footer>
+      <ReactModal
+        isOpen={showLocationModal}
+        onRequestClose={() => setshowLocationModal(false)}
+        contentLabel="Pilih Zon Lokasi Anda"
+        shouldCloseOnOverlayClick={true}
+        overlayClassName="modal-overlay"
+      >
+        <h2>Pilih Lokasi Zon</h2>
+        {groupedZones.results.map(({ zone, state, location: stateLoc }) => (
+          <div key={zone}>
+            <strong>{zone}</strong> <em>{state}</em>
+            <br />
+            <span>{stateLoc.join(' | ')}</span>
+          </div>
+        ))}
+      </ReactModal>
     </div>
   );
 }
