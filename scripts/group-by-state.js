@@ -1,4 +1,4 @@
-#!/env/node
+#!/usr/bin/env node
 
 const zones = require('../src/data/zones-and-same-zones.json')
 
