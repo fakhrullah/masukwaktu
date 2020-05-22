@@ -11,9 +11,13 @@ import {
 } from './NextSolatAndLocation';
 import { SponsorText } from './SponsorText';
 import Header from './Header';
-import groupedZones from './data/grouped-zones.json';
 import groupedZonesByStates from './data/group-by-states.json';
-import zones from './data/zones-and-same-zones.json';
+
+enum LOADING {
+  START,
+  PROGRESS,
+  DONE
+}
 
 interface MyType {
   [key: string]: number;
@@ -37,7 +41,7 @@ const initialLocation = {
   id: 'kuala-lumpur_wilayah',
   name: 'Kuala Lumpur',
   state: 'Wilayah',
-  zone: 'kl',
+  zone: 'wly01',
   othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR'],
 };
 
@@ -65,7 +69,7 @@ function getNextSolatName(currentSolatName: string): string {
     'asar',
     'maghrib',
     'isyak',
-    'subuh_esok'];
+    'subuh_tomorrow'];
   const currentSolatIndex = solatTimeArray.indexOf(currentSolatName);
   return solatTimeArray[currentSolatIndex + 1];
 }
@@ -74,7 +78,7 @@ function getNextSolatName(currentSolatName: string): string {
 ReactModal.setAppElement('#root');
 
 function App() {
-  const [countdown, setCountdown] = useState('00:00:00');
+  const [countdown, setCountdown] = useState('--:--:--');
   const [seconds, setSeconds] = useState(0);
   const [nextSolat, setNextSolat] = useState('subuh');
 
@@ -84,7 +88,7 @@ function App() {
 
   const [waktuSolatToday, setWaktuSolatToday] = useState(initialWaktuSolatToday);
   const [location, setLocation] = useState(initialLocation);
-  const [isLoading, setIsLoading] = useState('none');
+  const [isLoading, setIsLoading] = useState(LOADING.START);
 
   // modal states
   const [showLocationModal, setshowLocationModal] = useState(false);
@@ -95,7 +99,7 @@ function App() {
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
-    // console.log(nextSolatName);
+    // console.log(current.getTime());
     const nextSolatTime = waktuSolatToday[nextSolatName];
     const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
 
@@ -120,43 +124,57 @@ function App() {
       }
       calculateCountdown(nextSolat);
     }, 1000);
+    console.log('useeffect counter');
     return () => {
       clearInterval(counter);
     };
   });
 
+  // request solat time from API, then set the time
   useEffect(() => {
-    // GET https://_____
-    //
-    setIsLoading('LOADING');
-    setLocation({
-      id: 'subang-jaya_selangor',
-      name: 'Subang Jaya',
-      state: 'Selangor',
-      zone: 'SGHR01',
-      othersInSameZone: ['SUBANG JAYA', 'PETALING JAYA', 'GOMBAK', 'HULU LANGAT', 'SEPANG',
-        'HULU SELANGOR', 'SHAH ALAM'],
-    });
-    setWaktuSolatToday({
-      datestamp: 1589644800,
-      imsak: 1589664660,
-      subuh: 1589665260,
-      syuruk: 1589670060,
-      zohor: 1589692320,
-      asar: 1589704500,
-      maghrib: 1589714400,
-      isyak: 1589718840,
-      subuh_tomorrow: 1589751660,
-    });
-    setIsLoading('DONE');
+    setIsLoading(LOADING.PROGRESS);
+    fetch(`https://api.azanpro.com/times/today.json?zone=${location.zone}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { date, ...prayerTimes } = data.prayer_times;
+        setWaktuSolatToday({
+          ...prayerTimes,
+        });
+        console.log(data);
+        return prayerTimes;
+      })
+      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`https://api.azanpro.com/times/tomorrow.json?zone=${location.zone}`)]))
+      .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([todayPrayerTimes, tomorrowPrayerTimesResponse.json()]))
+      .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
+        const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
+        setWaktuSolatToday({
+          ...todayPrayerTimes,
+          subuh_tomorrow: subuhTomorrow,
+        });
+        setIsLoading(LOADING.DONE);
+      });
+    return () => {
+    };
+  }, [location.zone]);
 
-    return () => {};
-  }, [waktuSolatToday.imsak]);
+  useEffect(() => {
+    const currentTimestamp = Math.floor((new Date()).getTime() / 1000);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { imsak, datestamp, ...tempWaktuSolatToday } = waktuSolatToday;
+    tempWaktuSolatToday.now = currentTimestamp;
+    const timeArray = Object.entries(tempWaktuSolatToday);
+    const sortedTimeArray = timeArray.sort(([keyA, valueA], [keyB, valueB]) => (valueA >= valueB ? 1 : -1));
+    console.log(sortedTimeArray);
+    const indexOfNextSolat = sortedTimeArray.findIndex((solatTime) => solatTime.includes('now')) + 1;
+    setNextSolat(sortedTimeArray[indexOfNextSolat][0]);
+    console.log(indexOfNextSolat);
+  }, [waktuSolatToday, waktuSolatToday.imsak]);
 
   const chooseLocation = () => {
     console.group('modal-to-choose-place');
     console.info('SHOW Modal to choose location');
-    console.table([['selangor', 'sghr01'], ['selangor', 'sghr02'], ['terengganu', 'setiu']]);
+    console.table([['selangor', 'sgr01'], ['selangor', 'sgr02'], ['terengganu', 'setiu']]);
     console.groupEnd();
 
     setshowLocationModal(true);
@@ -248,7 +266,7 @@ function App() {
       </NextSolatAndLocation>
 
       <footer style={{ position: 'fixed', bottom: '0' }}>
-        {isLoading === 'DONE'
+        {isLoading === LOADING.DONE
         && (
         <div style={{ display: 'flex' }}>
           <WaktuSolatDiv name="IMSAK" time={convertTimestampToHumanTime(waktuSolatToday.imsak)} ampm="am" />
