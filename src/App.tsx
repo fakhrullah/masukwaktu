@@ -75,6 +75,10 @@ function getNextSolatName(currentSolatName: string): string {
   return solatTimeArray[currentSolatIndex + 1];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function logCurrentCountdown(hour: number, minute: number, second: number): void {
+  console.log(`${hour}:${minute}:${second}`);
+}
 
 ReactModal.setAppElement('#root');
 
@@ -94,9 +98,6 @@ function App() {
   // modal states
   const [showLocationModal, setshowLocationModal] = useState(false);
 
-  function logCurrentCountdown() {
-    console.log(`${countdownHour}:${countdownMinutes}:${countdownSeconds}`);
-  }
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
@@ -113,7 +114,7 @@ function App() {
     setCountdownMinutes(Math.floor((countdownInSeconds % 3600) / 60));
     setCountdownSeconds(Math.floor(countdownInSeconds % 60));
     setCountdown(displayCountdown(countdownHour, countdownMinutes, countdownSeconds));
-    logCurrentCountdown();
+    // logCurrentCountdown(countdownHour, countdownMinutes, countdownSeconds);
   }
 
   useInterval(() => {
