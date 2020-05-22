@@ -12,6 +12,7 @@ import {
 import { SponsorText } from './SponsorText';
 import Header from './Header';
 import groupedZonesByStates from './data/group-by-states.json';
+import { useInterval } from './use-interval-hook';
 
 enum LOADING {
   START,
@@ -115,20 +116,14 @@ function App() {
     logCurrentCountdown();
   }
 
-  useEffect(() => {
-    const counter = setInterval(() => {
-      if (seconds >= 59) {
-        setSeconds(0);
-      } else {
-        setSeconds(seconds + 1);
-      }
-      calculateCountdown(nextSolat);
-    }, 1000);
-    console.log('useeffect counter');
-    return () => {
-      clearInterval(counter);
-    };
-  });
+  useInterval(() => {
+    if (seconds >= 59) {
+      setSeconds(0);
+    } else {
+      setSeconds(seconds + 1);
+    }
+    calculateCountdown(nextSolat);
+  }, 1000);
 
   // request solat time from API, then set the time
   useEffect(() => {
@@ -165,10 +160,10 @@ function App() {
     tempWaktuSolatToday.now = currentTimestamp;
     const timeArray = Object.entries(tempWaktuSolatToday);
     const sortedTimeArray = timeArray.sort(([keyA, valueA], [keyB, valueB]) => (valueA >= valueB ? 1 : -1));
-    console.log(sortedTimeArray);
+    // console.log(sortedTimeArray);
     const indexOfNextSolat = sortedTimeArray.findIndex((solatTime) => solatTime.includes('now')) + 1;
     setNextSolat(sortedTimeArray[indexOfNextSolat][0]);
-    console.log(indexOfNextSolat);
+    // console.log(indexOfNextSolat);
   }, [waktuSolatToday, waktuSolatToday.imsak]);
 
   const chooseLocation = () => {
