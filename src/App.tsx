@@ -3,6 +3,7 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
+import UrlParse from 'url-parse';
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
 import {
@@ -12,7 +13,10 @@ import {
 import { SponsorText } from './SponsorText';
 import Header from './Header';
 import groupedZonesByStates from './data/group-by-states.json';
+import zonesAndSameZones from './data/zones-and-same-zones.json';
 import { useInterval } from './use-interval-hook';
+
+const apiURL = 'https://solatapi.fajarhac.com';
 
 enum LOADING {
   START,
@@ -129,7 +133,23 @@ function App() {
   // request solat time from API, then set the time
   useEffect(() => {
     setIsLoading(LOADING.PROGRESS);
-    fetch(`https://api.azanpro.com/times/today.json?zone=${location.zone}`)
+    const url = UrlParse(window.location.href);
+    const locationInUrl = url.pathname.split('/')[1];
+    // console.log(`${url.pathname.split('/')[1]}  ----------------`);
+    if (locationInUrl !== '') {
+      console.log(locationInUrl);
+      const zone = zonesAndSameZones.zones.find((checkZone) => checkZone.id === locationInUrl);
+      if (typeof zone !== 'undefined') {
+        setLocation({
+          id: zone.id,
+          name: zone.lokasi,
+          state: zone.negeri,
+          zone: zone.zone,
+          othersInSameZone: zone.othersInSameZone,
+        });
+      }
+    }
+    fetch(`${apiURL}/times/today.json?zone=${location.zone}`)
       .then((response) => response.json())
       .then((data) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -140,7 +160,7 @@ function App() {
         console.log(data);
         return prayerTimes;
       })
-      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`https://api.azanpro.com/times/tomorrow.json?zone=${location.zone}`)]))
+      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${location.zone}`)]))
       .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([todayPrayerTimes, tomorrowPrayerTimesResponse.json()]))
       .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
         const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
@@ -185,13 +205,9 @@ function App() {
   }
 
   const changeLocation = (zone: ZoneLocationInterface) => {
-    setLocation({
-      id: zone.id,
-      name: zone.lokasi,
-      state: zone.negeri,
-      zone: zone.zone,
-      othersInSameZone: zone.othersInSameZone,
-    });
+    const url = UrlParse(window.location.href);
+    url.set('pathname', `/${zone.id}`);
+    window.location.href = url.href;
     setshowLocationModal(false);
   };
 
