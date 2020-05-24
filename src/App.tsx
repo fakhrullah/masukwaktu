@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import UrlParse from 'url-parse';
 import {
-  convertTimestampToHumanTime, displayCountdown,
+  convertTimestampToHumanTime,
   getNextSolatName,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logCurrentCountdown,
@@ -23,6 +23,7 @@ import zonesAndSameZones from './data/zones-and-same-zones.json';
 import { useInterval } from './use-interval-hook';
 import AboutModal from './AboutModal';
 import SettingSidebarModal from './SettingSidebarModal';
+import Countdown from './Countdown';
 
 const apiURL = 'https://solatapi.fajarhac.com';
 
@@ -69,7 +70,6 @@ const initialLocation: LocationDetail = {
 ReactModal.setAppElement('#root');
 
 function App() {
-  const [countdown, setCountdown] = useState('--:--:--');
   const [seconds, setSeconds] = useState(0);
   const [nextSolat, setNextSolat] = useState('subuh');
 
@@ -100,7 +100,6 @@ function App() {
     setCountdownHour(Math.floor(countdownInSeconds / 3600));
     setCountdownMinutes(Math.floor((countdownInSeconds % 3600) / 60));
     setCountdownSeconds(Math.floor(countdownInSeconds % 60));
-    setCountdown(displayCountdown(countdownHour, countdownMinutes, countdownSeconds));
     // logCurrentCountdown(countdownHour, countdownMinutes, countdownSeconds);
   }
 
@@ -216,46 +215,7 @@ function App() {
       <Header />
       <SettingButton onClick={() => setShowSettingSidebarModal(true)} />
 
-      {/* timer */}
-      <div style={{ width: '100%', textAlign: 'center', position: 'relative' }}>
-        <div style={{
-          fontSize: '20vw',
-          fontFamily: 'SquadaOne',
-          margin: '32px 0 32px 0',
-          letterSpacing: '0.1em',
-          color: '#dfdfdf',
-          position: 'absolute',
-          top: '0',
-          width: '100%',
-          fontVariantNumeric: 'ordinal',
-        }}
-        >
-          {countdown}
-        </div>
-        <div style={{
-          fontSize: '20vw',
-          fontFamily: 'SquadaOne',
-          margin: '32px 0 32px 0',
-          letterSpacing: '0.1em',
-          clipPath: 'inset(100% 50% 100% 100%)',
-          position: 'absolute',
-          width: '100%',
-          fontVariantNumeric: 'ordinal',
-        }}
-        >
-          {countdown}
-        </div>
-        <div style={{
-          fontSize: '20vw',
-          fontFamily: 'SquadaOne',
-          margin: '32px 0 16px 0',
-          letterSpacing: '0.1em',
-          visibility: 'hidden',
-        }}
-        >
-          _
-        </div>
-      </div>
+      <Countdown countdown={[countdownHour, countdownMinutes, countdownSeconds]} />
 
       <NextSolatAndLocation>
         <div>
