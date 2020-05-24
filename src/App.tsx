@@ -258,18 +258,24 @@ function App() {
       </NextSolatAndLocation>
 
       <footer style={{ position: 'fixed', bottom: '0' }}>
-        {isLoading === LOADING.DONE
-        && (
         <div style={{ display: 'flex' }}>
-          <WaktuSolatDiv name="IMSAK" time={convertTimestampToHumanTime(waktuSolatToday.imsak)} ampm="am" />
-          <WaktuSolatDiv name="SUBUH" time={convertTimestampToHumanTime(waktuSolatToday.subuh)} ampm="am" />
-          <WaktuSolatDiv name="SYURUK" time={convertTimestampToHumanTime(waktuSolatToday.syuruk)} ampm="am" />
-          <WaktuSolatDiv name="ZOHOR" time={convertTimestampToHumanTime(waktuSolatToday.zohor)} ampm="pm" />
-          <WaktuSolatDiv name="ASAR" time={convertTimestampToHumanTime(waktuSolatToday.asar)} ampm="pm" />
-          <WaktuSolatDiv name="MAGHRIB" time={convertTimestampToHumanTime(waktuSolatToday.maghrib)} ampm="pm" />
-          <WaktuSolatDiv name="ISYAK" time={convertTimestampToHumanTime(waktuSolatToday.isyak)} ampm="pm" />
+          {[
+            'imsak',
+            'syuruk',
+            'subuh',
+            'zohor',
+            'asar',
+            'maghrib',
+            'isyak',
+          ].map((solat) => (
+            <WaktuSolatDiv
+              key={solat}
+              name={solat.toUpperCase()}
+              time={isLoading === LOADING.DONE ? convertTimestampToHumanTime(waktuSolatToday[solat]) : '--:--'}
+              ampm="am"
+            />
+          ))}
         </div>
-        )}
 
         <SponsorText onClick={showSponsorModal} />
       </footer>
