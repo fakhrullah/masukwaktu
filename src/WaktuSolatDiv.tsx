@@ -22,9 +22,9 @@ const WaktuSolat = styled.div`
 `;
 
 interface WaktuSolatDivProp{
-  name: String;
-  time: String;
-  ampm: String;
+  name: string;
+  time: string;
+  ampm: string;
 }
 
 const WaktuSolatDiv = (prop: WaktuSolatDivProp) => (

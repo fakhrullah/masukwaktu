@@ -12,7 +12,7 @@ const NextSolatAndLocation = styled.div`
 // -------------------------
 
 interface SameZoneProps {
-  othersLocationInSameZone: Array<String>
+  othersLocationInSameZone: Array<string>
 }
 
 const SameZoneDiv = styled.div`
@@ -42,7 +42,7 @@ const NextSolatDiv = styled.span`
 `;
 
 interface NextSolatProps {
-  name: String
+  name: string
 }
 
 const NextSolat = (props: NextSolatProps) => <NextSolatDiv>{props.name}</NextSolatDiv>;
@@ -50,7 +50,7 @@ const NextSolat = (props: NextSolatProps) => <NextSolatDiv>{props.name}</NextSol
 // -------------------------
 
 interface SolatLocationProps{
-  name: String
+  name: string
   onClick: (event: React.MouseEvent<HTMLSpanElement>) => void
 }
 

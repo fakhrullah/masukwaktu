@@ -4,6 +4,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import UrlParse from 'url-parse';
+import {
+  convertTimestampToHumanTime, displayCountdown,
+  getNextSolatName,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  logCurrentCountdown,
+} from './utils/helpers';
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
 import {
@@ -28,61 +34,35 @@ interface MyType {
   [key: string]: number;
 }
 
-const currentTimstamp: number = (new Date()).getTime();
+const currentTimestamp: number = (new Date()).getTime();
 
 const initialWaktuSolatToday: MyType = {
-  datestamp: currentTimstamp,
-  imsak: currentTimstamp,
-  subuh: currentTimstamp,
-  syuruk: currentTimstamp,
-  zohor: currentTimstamp,
-  asar: currentTimstamp,
-  maghrib: currentTimstamp,
-  isyak: currentTimstamp,
-  subuh_tomorrow: currentTimstamp,
+  datestamp: currentTimestamp,
+  imsak: currentTimestamp,
+  subuh: currentTimestamp,
+  syuruk: currentTimestamp,
+  zohor: currentTimestamp,
+  asar: currentTimestamp,
+  maghrib: currentTimestamp,
+  isyak: currentTimestamp,
+  subuh_tomorrow: currentTimestamp,
 };
 
-const initialLocation = {
+interface LocationDetail {
+  id: string;
+  name: string;
+  state: string;
+  zone: string;
+  othersInSameZone: Array<string>;
+}
+
+const initialLocation: LocationDetail = {
   id: 'kuala-lumpur_wilayah',
   name: 'Kuala Lumpur',
   state: 'Wilayah',
   zone: 'wly01',
   othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR'],
 };
-
-function convertTimestampToHumanTime(timestamp: number): string {
-  const time: Date = new Date(timestamp * 1000);
-  const hour: number = time.getHours();
-  const minute: number = time.getMinutes();
-  const formattedHour: String = hour > 12 ? `${(hour - 12)}` : `${hour}`;
-  const formattedMinute: String = minute < 10 ? `0${minute}` : `${minute}`;
-  return `${formattedHour}:${formattedMinute}`;
-}
-
-function displayCountdown(hour: number, minute: number, second: number) : string {
-  const hourTwoDigits = hour >= 10 ? hour : `0${hour}`;
-  const minuteTwoDigits = minute >= 10 ? minute : `0${minute}`;
-  const secondTwoDigits = second >= 10 ? second : `0${second}`;
-  return `${hourTwoDigits}:${minuteTwoDigits}:${secondTwoDigits}`;
-}
-
-function getNextSolatName(currentSolatName: string): string {
-  const solatTimeArray = [
-    'subuh',
-    'syuruk',
-    'zohor',
-    'asar',
-    'maghrib',
-    'isyak',
-    'subuh_tomorrow'];
-  const currentSolatIndex = solatTimeArray.indexOf(currentSolatName);
-  return solatTimeArray[currentSolatIndex + 1];
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function logCurrentCountdown(hour: number, minute: number, second: number): void {
-  console.log(`${hour}:${minute}:${second}`);
-}
 
 ReactModal.setAppElement('#root');
 
@@ -101,7 +81,6 @@ function App() {
 
   // modal states
   const [showLocationModal, setshowLocationModal] = useState(false);
-
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
@@ -135,20 +114,21 @@ function App() {
     setIsLoading(LOADING.PROGRESS);
     const url = UrlParse(window.location.href);
     const locationInUrl = url.pathname.split('/')[1];
-    // console.log(`${url.pathname.split('/')[1]}  ----------------`);
+    // console.log(`====> ${locationInUrl}`);
+
     if (locationInUrl !== '') {
-      console.log(locationInUrl);
-      const zone = zonesAndSameZones.zones.find((checkZone) => checkZone.id === locationInUrl);
-      if (typeof zone !== 'undefined') {
+      // console.log(locationInUrl);
+      const foundZone = zonesAndSameZones.zones.find((checkZone) => checkZone.id === locationInUrl);
+      if (typeof foundZone !== 'undefined') {
+        const {
+          id, lokasi, negeri, zone, othersInSameZone,
+        } = foundZone;
         setLocation({
-          id: zone.id,
-          name: zone.lokasi,
-          state: zone.negeri,
-          zone: zone.zone,
-          othersInSameZone: zone.othersInSameZone,
+          id, name: lokasi, state: negeri, zone, othersInSameZone,
         });
       }
     }
+
     fetch(`${apiURL}/times/today.json?zone=${location.zone}`)
       .then((response) => response.json())
       .then((data) => {
@@ -175,10 +155,10 @@ function App() {
   }, [location.zone]);
 
   useEffect(() => {
-    const currentTimestamp = Math.floor((new Date()).getTime() / 1000);
+    const currentTimestampInSeconds = Math.floor((new Date()).getTime() / 1000);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { imsak, datestamp, ...tempWaktuSolatToday } = waktuSolatToday;
-    tempWaktuSolatToday.now = currentTimestamp;
+    tempWaktuSolatToday.now = currentTimestampInSeconds;
     const timeArray = Object.entries(tempWaktuSolatToday);
     const sortedTimeArray = timeArray.sort(([keyA, valueA], [keyB, valueB]) => (valueA >= valueB ? 1 : -1));
     // console.log(sortedTimeArray);
