@@ -19,6 +19,14 @@ const CountdownTimer = styled.div`
   width: 100%;
 `;
 
+const CountdownPlaceholder = styled.div`
+  font-size: 20vw;
+  font-family: "SquadaOne";
+  margin: 32px 0 16px 0;
+  letter-spacing: 0.1em;
+  visibility: hidden;
+`;
+
 interface Props {
   countdown: Array<number>;
 }
@@ -51,9 +59,9 @@ const Countdown = ({ countdown }: Props) => {
       >
         {displayCountdown(hour, minutes, second)}
       </CountdownTimer>
-      <CountdownTimer style={{ visibility: 'hidden' }}>
+      <CountdownPlaceholder>
         -
-      </CountdownTimer>
+      </CountdownPlaceholder>
     </CountdownWrapper>
   );
 };
