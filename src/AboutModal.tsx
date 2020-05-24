@@ -3,7 +3,7 @@ import ReactModal from 'react-modal';
 
 interface AboutModalProps {
   isOpen: boolean;
-  onRequestClose: (event: React.MouseEvent<HTMLSpanElement>) => void;
+  onRequestClose: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const AboutModal = ({ isOpen, onRequestClose }: AboutModalProps) => (
