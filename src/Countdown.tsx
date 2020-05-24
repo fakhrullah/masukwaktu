@@ -51,16 +51,9 @@ const Countdown = ({ countdown }: Props) => {
       >
         {displayCountdown(hour, minutes, second)}
       </CountdownTimer>
-      <div style={{
-        fontSize: '20vw',
-        fontFamily: 'SquadaOne',
-        margin: '32px 0 16px 0',
-        letterSpacing: '0.1em',
-        visibility: 'hidden',
-      }}
-      >
-        _
-      </div>
+      <CountdownTimer style={{ visibility: 'hidden' }}>
+        -
+      </CountdownTimer>
     </CountdownWrapper>
   );
 };
