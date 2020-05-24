@@ -21,6 +21,7 @@ import Header from './Header';
 import groupedZonesByStates from './data/group-by-states.json';
 import zonesAndSameZones from './data/zones-and-same-zones.json';
 import { useInterval } from './use-interval-hook';
+import AboutModal from './AboutModal';
 
 const apiURL = 'https://solatapi.fajarhac.com';
 
@@ -81,6 +82,7 @@ function App() {
 
   // modal states
   const [showLocationModal, setshowLocationModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
@@ -195,6 +197,8 @@ function App() {
     console.group('sponsor-modal');
     console.info('SHOW Sponsor Modal');
     console.groupEnd();
+
+    setShowAboutModal(true);
   };
 
   return (
@@ -279,6 +283,10 @@ function App() {
 
         <SponsorText onClick={showSponsorModal} />
       </footer>
+      <AboutModal
+        isOpen={showAboutModal}
+        onRequestClose={() => setShowAboutModal(false)}
+      />
       <ReactModal
         isOpen={showLocationModal}
         onRequestClose={() => setshowLocationModal(false)}
