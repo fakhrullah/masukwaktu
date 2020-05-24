@@ -26,3 +26,37 @@ code {
   bottom: 0;
   background-color: rgba(0,0,0,0.6);
 }
+
+/* Sidebar */
+
+.modal-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.6);
+  transform: translateX(-100%);
+  transition: transform 2000ms ease-in-out;
+}
+.modal-sidebar-overlay--after-open {
+  transform: translateX(0%);
+}
+.modal-sidebar-overlay--before-close {
+  transform: translateX(-100%);
+}
+
+.modal-sidebar {
+  position: absolute;
+  top: 0px;
+  left: auto;
+  right: 0px;
+  bottom: 0px;
+  border: 1px solid #ccc;
+  background: #fff;
+  max-width: 40%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  outline: none;
+  padding: 20px;
+}

@@ -3,7 +3,7 @@ import { FiSettings } from 'react-icons/fi';
 import styled from 'styled-components';
 
 interface Props {
-
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
 }
 
 const ButtonWrapper = styled.div`
@@ -13,8 +13,8 @@ const ButtonWrapper = styled.div`
     cursor: pointer;
 `;
 
-export const SettingButton = (props: Props) => (
-  <ButtonWrapper>
+export const SettingButton = ({ onClick }: Props) => (
+  <ButtonWrapper onClick={onClick}>
     <FiSettings />
   </ButtonWrapper>
 );

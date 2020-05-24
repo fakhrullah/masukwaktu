@@ -22,6 +22,7 @@ import groupedZonesByStates from './data/group-by-states.json';
 import zonesAndSameZones from './data/zones-and-same-zones.json';
 import { useInterval } from './use-interval-hook';
 import AboutModal from './AboutModal';
+import SettingSidebarModal from './SettingSidebarModal';
 
 const apiURL = 'https://solatapi.fajarhac.com';
 
@@ -81,8 +82,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(LOADING.START);
 
   // modal states
-  const [showLocationModal, setshowLocationModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showSettingSidebarModal, setShowSettingSidebarModal] = useState(false);
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
@@ -175,7 +177,7 @@ function App() {
     console.table([['selangor', 'sgr01'], ['selangor', 'sgr02'], ['terengganu', 'setiu']]);
     console.groupEnd();
 
-    setshowLocationModal(true);
+    setShowLocationModal(true);
   };
 
   interface ZoneLocationInterface {
@@ -212,7 +214,7 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <SettingButton />
+      <SettingButton onClick={() => setShowSettingSidebarModal(true)} />
 
       {/* timer */}
       <div style={{ width: '100%', textAlign: 'center', position: 'relative' }}>
@@ -295,9 +297,13 @@ function App() {
         isOpen={showAboutModal}
         onRequestClose={() => setShowAboutModal(false)}
       />
+      <SettingSidebarModal
+        isOpen={showSettingSidebarModal}
+        onRequestClose={() => setShowSettingSidebarModal(false)}
+      />
       <ReactModal
         isOpen={showLocationModal}
-        onRequestClose={() => setshowLocationModal(false)}
+        onRequestClose={() => setShowLocationModal(false)}
         contentLabel="Pilih Zon Lokasi Anda"
         shouldCloseOnOverlayClick={true}
         overlayClassName="modal-overlay"
