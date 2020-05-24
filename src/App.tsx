@@ -189,8 +189,16 @@ function App() {
   const changeLocation = (zone: ZoneLocationInterface) => {
     const url = UrlParse(window.location.href);
     url.set('pathname', `/${zone.id}`);
-    window.location.href = url.href;
-    setshowLocationModal(false);
+    // window.location.href = url.href;
+    window.history.replaceState('', '', `${url.href}`);
+    setLocation({
+      id: zone.id,
+      name: zone.lokasi,
+      state: zone.negeri,
+      zone: zone.zone,
+      othersInSameZone: zone.othersInSameZone,
+    });
+    setShowLocationModal(false);
   };
 
   const showSponsorModal = () => {
