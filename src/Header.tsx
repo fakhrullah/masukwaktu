@@ -7,13 +7,17 @@ interface Props {
 }
 
 const HeaderDiv = styled.header`
-    text-align: center;
+  text-align: center;
 
-    .logo-div{
-        background-color: #c4c4c4;
-        padding: 16px;
-        display: inline-block;
+  .logo-div{
+    background-color: #c4c4c4;
+    padding: 16px;
+    display: inline-block;
+    @media screen and (max-width: 678px) {
+      transform: scale(60%);
+      transform-origin: 50% 0 0;
     }
+  }
 `;
 
 const Header = (props: Props) => (
