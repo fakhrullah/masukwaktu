@@ -86,6 +86,9 @@ function App() {
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [showSettingSidebarModal, setShowSettingSidebarModal] = useState(false);
 
+  // show azan
+  const [showAzan, setShowAzan] = useState(false);
+
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
     // console.log(current.getTime());
@@ -95,6 +98,13 @@ function App() {
     // change to next solat
     if (countdownInSeconds <= 0) {
       setNextSolat(getNextSolatName(nextSolat));
+
+      if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
+        setShowAzan(true);
+        setTimeout(() => {
+          setShowAzan(false);
+        }, 5 * 60 * 1000);
+      }
     }
 
     setCountdownHour(Math.floor(countdownInSeconds / 3600));
@@ -215,21 +225,38 @@ function App() {
       <Header />
       <SettingButton onClick={() => setShowSettingSidebarModal(true)} />
 
-      <Countdown countdown={[countdownHour, countdownMinutes, countdownSeconds]} />
+      <div className={showAzan ? 'shrink' : ''}>
+        <Countdown countdown={[countdownHour, countdownMinutes, countdownSeconds]} />
 
-      <NextSolatAndLocation>
-        <div>
-          Sebelum Masuk Waktu
-          {' '}
-          <NextSolat name={nextSolat} />
-          {' '}
-          di
-          {' '}
-          <SolatLocation name={location.name} onClick={chooseLocation} />
-          <ChangeLocationButton onClick={chooseLocation} />
-        </div>
-        <SameZone othersLocationInSameZone={location.othersInSameZone} />
-      </NextSolatAndLocation>
+        <NextSolatAndLocation>
+          <div>
+            Sebelum Masuk Waktu
+            {' '}
+            <NextSolat name={nextSolat} />
+            {' '}
+            di
+            {' '}
+            <SolatLocation name={location.name} onClick={chooseLocation} />
+            <ChangeLocationButton onClick={chooseLocation} />
+          </div>
+          <SameZone othersLocationInSameZone={location.othersInSameZone} />
+        </NextSolatAndLocation>
+      </div>
+
+      <div style={{ width: '100%', textAlign: 'center' }}>
+        {
+          showAzan
+          && <iframe
+            title="azan video"
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/mUHDYlJHaOQ?autoplay=1&mute=1"
+            frameBorder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        }
+      </div>
 
       <footer style={{ position: 'fixed', bottom: '0' }}>
         <div style={{ display: 'flex' }}>
