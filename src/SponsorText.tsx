@@ -9,23 +9,37 @@ interface Props {
 }
 
 const SponsorTextDiv = styled.div`
-    text-align: center;
-    padding: 8px 0;
-    background-color: #000;
-    color: #fff;
-    letter-spacing: 1px;
+  text-align: center;
+  padding: 8px 0;
+  background-color: #000;
+  color: #fff;
+  letter-spacing: 1px;
 
-    .detail-modal {
-        text-decoration: underline;
-        color: #ccc;
-        font-size: 12px;
-        cursor: pointer;
+  @media screen and (max-width: 678px) {
+    font-size: 12px;
+  }
+
+  .detail-modal {
+    text-decoration: underline;
+    color: #ccc;
+    font-size: 80%;
+    cursor: pointer;
+  }
+
+  .logo-span {
+    display: inline-block;
+    @media screen and (max-width:678px) {
+      transform-origin: 100% 80% 0;
+      transform: scale(60%);
     }
+  }
 `;
 
 export const SponsorText = (props: Props) => (
   <SponsorTextDiv>
-    <MasukWaktuLogo size={18} color="#ddd" />
+    <span className="logo-span">
+      <MasukWaktuLogo size={18} color="#ddd" />
+    </span>
     {' '}
     mencari penaja <strong>RM5k</strong> setahun.
     {' '}

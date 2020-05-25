@@ -9,15 +9,27 @@ const WaktuSolat = styled.div`
   .name {
     color: #767676;
     font-size: 18px;
+
+    @media screen and (max-width: 678px) {
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
   }
   .time {
     color: #000;
     font-size: 36px;
     font-weight: bold;
+    @media screen and (max-width: 678px) {
+      font-size: 16px;
+    }
   }
   .ampm {
     color: #000;
     font-size: 18px;
+    @media screen and (max-width: 678px) {
+      /* font-size: 10px; */
+      display: none;
+    }
   }
 `;
 

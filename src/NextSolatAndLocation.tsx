@@ -3,10 +3,20 @@ import styled from 'styled-components';
 import { FiEdit2 } from 'react-icons/fi';
 
 const NextSolatAndLocation = styled.div`
-    text-align: center;
-    color: #787878;
-    font-family: 'Roboto';
-    font-size: 24px;
+  text-align: center;
+  color: #787878;
+  font-family: 'Roboto';
+  margin-top: 24px;
+  font-size: 24px;
+  padding: 8px;
+  
+  @media screen and (max-width: 678px) {
+    font-size: 16px;
+  }
+  @media screen and (max-width: 478px) {
+    margin-top: 40px;
+    font-size: 12px;
+  }
 `;
 
 // -------------------------
@@ -22,7 +32,15 @@ const SameZoneDiv = styled.div`
   max-width: 600px;
   margin: 0 auto;
   font-size: 16px;
-`
+  
+  @media screen and (max-width: 678px) {
+    font-size: 12px;
+    line-height: 20px;
+  }
+  @media screen and (max-width: 478px) {
+    font-size: 10px;
+  }
+`;
 
 const SameZone = (props: SameZoneProps) => (
   <SameZoneDiv>
@@ -78,11 +96,28 @@ const ChangeLocationButtonDiv = styled.span`
   background-color: #333;
   border-radius: 50%;
   cursor: pointer;
+  
+  @media screen and (max-width: 678px) {
+    width: 16px;
+    height: 16px;
+  }
+  @media screen and (max-width: 478px) {
+    width: 12px;
+    height: 12px;
+  }
 
   .icon {
-      position: absolute;
-      top: 4px;
-      right: 4px;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    @media screen and (max-width: 678px) {
+      top: -2px;
+      right: -2px;
+    }
+    @media screen and (max-width: 478px) {
+      top: -3px;
+      right: -3px;
+    }
   }
 `;
 

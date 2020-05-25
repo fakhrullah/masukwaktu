@@ -11,6 +11,11 @@ const ButtonWrapper = styled.div`
     right: 32px;
     top: 32px;
     cursor: pointer;
+
+    @media screen and (max-width: 678px) {
+      top: 16px;
+      right: 16px;
+    }
 `;
 
 export const SettingButton = ({ onClick }: Props) => (
