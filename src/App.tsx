@@ -235,8 +235,8 @@ function App() {
         <div style={{ display: 'flex' }}>
           {[
             'imsak',
-            'syuruk',
             'subuh',
+            'syuruk',
             'zohor',
             'asar',
             'maghrib',
