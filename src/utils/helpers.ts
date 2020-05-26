@@ -28,6 +28,19 @@ function getNextSolatName(currentSolatName: string): string {
   return solatTimeArray[currentSolatIndex + 1];
 }
 
+function getCurrentSolatName(nextSolatName: string) {
+  const solatTimeArray = [
+    'subuh',
+    'syuruk',
+    'zohor',
+    'asar',
+    'maghrib',
+    'isyak',
+    'subuh_tomorrow'];
+  const nextSolatIndex = solatTimeArray.indexOf(nextSolatName);
+  return solatTimeArray[nextSolatIndex - 1];
+}
+
 function logCurrentCountdown(hour: number, minute: number, second: number): void {
   // eslint-disable-next-line no-console
   console.log(`${hour}:${minute}:${second}`);
@@ -38,5 +51,6 @@ export {
   convertTimestampToHumanTime,
   displayCountdown,
   getNextSolatName,
+  getCurrentSolatName,
   logCurrentCountdown,
 };

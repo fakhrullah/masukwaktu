@@ -7,6 +7,7 @@ import UrlParse from 'url-parse';
 import {
   convertTimestampToHumanTime,
   getNextSolatName,
+  getCurrentSolatName,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logCurrentCountdown,
 } from './utils/helpers';
@@ -94,11 +95,19 @@ function App() {
     // console.log(current.getTime());
     const nextSolatTime = waktuSolatToday[nextSolatName];
     const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
+    const currentSolatTime = waktuSolatToday[getCurrentSolatName(nextSolatName)]
 
     // change to next solat
     if (countdownInSeconds <= 0) {
       setNextSolat(getNextSolatName(nextSolat));
+    }
 
+    // Display azan video when azan is just in 3 minutes
+    if (
+      isLoading === LOADING.DONE
+      &&
+      (current.getTime() - (currentSolatTime * 1000))/1000 <= (3 * 60)
+    ) {
       if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
         setShowAzan(true);
         setTimeout(() => {
