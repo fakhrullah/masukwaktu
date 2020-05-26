@@ -18,12 +18,12 @@ import {
 } from './NextSolatAndLocation';
 import { SponsorText } from './SponsorText';
 import Header from './Header';
-import groupedZonesByStates from './data/group-by-states.json';
 import zonesAndSameZones from './data/zones-and-same-zones.json';
 import { useInterval } from './use-interval-hook';
 import AboutModal from './AboutModal';
 import SettingSidebarModal from './SettingSidebarModal';
 import Countdown from './Countdown';
+import ChooseLocationModal from './ChooseLocationModal';
 
 const apiURL = 'https://solatapi.fajarhac.com';
 
@@ -289,31 +289,11 @@ function App() {
         isOpen={showSettingSidebarModal}
         onRequestClose={() => setShowSettingSidebarModal(false)}
       />
-      <ReactModal
+      <ChooseLocationModal
         isOpen={showLocationModal}
         onRequestClose={() => setShowLocationModal(false)}
-        contentLabel="Pilih Zon Lokasi Anda"
-        shouldCloseOnOverlayClick={true}
-        overlayClassName="modal-overlay"
-      >
-        <h2>Pilih Lokasi Zon</h2>
-        {Object.entries(groupedZonesByStates.groupByStates).map(([state, zones]) => (
-          <div key={state.toLowerCase()}>
-            <span>{state}</span>
-            {zones.map((zone) => (
-              (
-                <button
-                  type="button"
-                  key={`${zone.id}`}
-                  onClick={() => changeLocation(zone)}
-                >
-                  {zone.lokasi}
-                </button>
-              )
-            ))}
-          </div>
-        ))}
-      </ReactModal>
+        changeLocation={changeLocation}
+        />
     </div>
   );
 }
