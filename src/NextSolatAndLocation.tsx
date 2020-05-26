@@ -57,6 +57,7 @@ const SameZone = (props: SameZoneProps) => (
 
 const NextSolatDiv = styled.span`
     font-weight: bold;
+    text-transform: capitalize;
 `;
 
 interface NextSolatProps {

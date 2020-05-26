@@ -18,12 +18,12 @@ import {
 } from './NextSolatAndLocation';
 import { SponsorText } from './SponsorText';
 import Header from './Header';
-import groupedZonesByStates from './data/group-by-states.json';
 import zonesAndSameZones from './data/zones-and-same-zones.json';
 import { useInterval } from './use-interval-hook';
 import AboutModal from './AboutModal';
 import SettingSidebarModal from './SettingSidebarModal';
 import Countdown from './Countdown';
+import ChooseLocationModal from './ChooseLocationModal';
 
 const apiURL = 'https://solatapi.fajarhac.com';
 
@@ -86,6 +86,9 @@ function App() {
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [showSettingSidebarModal, setShowSettingSidebarModal] = useState(false);
 
+  // show azan
+  const [showAzan, setShowAzan] = useState(false);
+
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
     // console.log(current.getTime());
@@ -95,6 +98,13 @@ function App() {
     // change to next solat
     if (countdownInSeconds <= 0) {
       setNextSolat(getNextSolatName(nextSolat));
+
+      if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
+        setShowAzan(true);
+        setTimeout(() => {
+          setShowAzan(false);
+        }, 5 * 60 * 1000);
+      }
     }
 
     setCountdownHour(Math.floor(countdownInSeconds / 3600));
@@ -215,21 +225,39 @@ function App() {
       <Header />
       <SettingButton onClick={() => setShowSettingSidebarModal(true)} />
 
-      <Countdown countdown={[countdownHour, countdownMinutes, countdownSeconds]} />
+      <div className={showAzan ? 'shrink' : ''}>
+        <Countdown countdown={[countdownHour, countdownMinutes, countdownSeconds]} />
 
-      <NextSolatAndLocation>
-        <div>
-          Sebelum Masuk Waktu
-          {' '}
-          <NextSolat name={nextSolat} />
-          {' '}
-          di
-          {' '}
-          <SolatLocation name={location.name} onClick={chooseLocation} />
-          <ChangeLocationButton onClick={chooseLocation} />
-        </div>
-        <SameZone othersLocationInSameZone={location.othersInSameZone} />
-      </NextSolatAndLocation>
+        <NextSolatAndLocation>
+          <div>
+            Sebelum Masuk Waktu
+            {' '}
+            <NextSolat name={nextSolat} />
+            {' '}
+            di
+            {' '}
+            <SolatLocation name={location.name} onClick={chooseLocation} />
+            <ChangeLocationButton onClick={chooseLocation} />
+          </div>
+          <SameZone othersLocationInSameZone={location.othersInSameZone} />
+        </NextSolatAndLocation>
+      </div>
+
+      <div style={{ width: '100%', textAlign: 'center' }}>
+        {
+          showAzan
+          && <iframe
+            style={{width: '100%', maxWidth: '560px'}}
+            title="azan video"
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/mUHDYlJHaOQ?autoplay=1&mute=1"
+            frameBorder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        }
+      </div>
 
       <footer style={{ position: 'fixed', bottom: '0' }}>
         <div style={{ display: 'flex' }}>
@@ -261,31 +289,11 @@ function App() {
         isOpen={showSettingSidebarModal}
         onRequestClose={() => setShowSettingSidebarModal(false)}
       />
-      <ReactModal
+      <ChooseLocationModal
         isOpen={showLocationModal}
         onRequestClose={() => setShowLocationModal(false)}
-        contentLabel="Pilih Zon Lokasi Anda"
-        shouldCloseOnOverlayClick={true}
-        overlayClassName="modal-overlay"
-      >
-        <h2>Pilih Lokasi Zon</h2>
-        {Object.entries(groupedZonesByStates.groupByStates).map(([state, zones]) => (
-          <div key={state.toLowerCase()}>
-            <span>{state}</span>
-            {zones.map((zone) => (
-              (
-                <button
-                  type="button"
-                  key={`${zone.id}`}
-                  onClick={() => changeLocation(zone)}
-                >
-                  {zone.lokasi}
-                </button>
-              )
-            ))}
-          </div>
-        ))}
-      </ReactModal>
+        changeLocation={changeLocation}
+        />
     </div>
   );
 }

@@ -17,6 +17,12 @@ const CountdownTimer = styled.div`
   color: #dfdfdf;
   top: 0;
   width: 100%;
+
+  .shrink & {
+    @media screen and (min-width: 678px) {
+      font-size: 4vw;
+    }
+  }
 `;
 
 const CountdownPlaceholder = styled.div`
@@ -25,6 +31,12 @@ const CountdownPlaceholder = styled.div`
   margin: 32px 0 16px 0;
   letter-spacing: 0.1em;
   visibility: hidden;
+
+  .shrink & {
+    @media screen and (min-width: 678px) {
+      font-size: 6vw;
+    }
+  }
 `;
 
 interface Props {
@@ -33,7 +45,7 @@ interface Props {
 
 const Countdown = ({ countdown }: Props) => {
   const [hour, minutes, second] = countdown;
-  let highlightPercentage;
+  let highlightPercentage: number;
 
   if (hour >= 10) {
     highlightPercentage = 100;
@@ -54,7 +66,8 @@ const Countdown = ({ countdown }: Props) => {
       </CountdownTimer>
       <CountdownTimer style={{
         color: '#333',
-        clipPath: `inset(100% ${highlightPercentage}% 100% 100%)`,
+        clipPath: `inset(0% 0% 0% ${100 - highlightPercentage}%)`,
+        WebkitClipPath: `inset(0% 0% 0% ${100 - highlightPercentage}%)`,
       }}
       >
         {displayCountdown(hour, minutes, second)}
