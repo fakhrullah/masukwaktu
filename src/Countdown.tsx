@@ -19,7 +19,9 @@ const CountdownTimer = styled.div`
   width: 100%;
 
   .shrink & {
-    font-size: 4vw;
+    @media screen and (min-width: 678px) {
+      font-size: 4vw;
+    }
   }
 `;
 
@@ -31,7 +33,9 @@ const CountdownPlaceholder = styled.div`
   visibility: hidden;
 
   .shrink & {
-    font-size: 4vw;
+    @media screen and (min-width: 678px) {
+      font-size: 6vw;
+    }
   }
 `;
 

@@ -247,6 +247,7 @@ function App() {
         {
           showAzan
           && <iframe
+            style={{width: '100%', maxWidth: '560px'}}
             title="azan video"
             width="560"
             height="315"
