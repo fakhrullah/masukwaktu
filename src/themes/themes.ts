@@ -10,6 +10,9 @@ interface ThemeConfigInterface {
   waktuSolatColor: string;
   waktuSolatTimeColor: string;
   waktuSolatTimeFontWeight: string;
+  sponsorBackground: string;
+  sponsorColor: string;
+  footerLogo: string;
 }
 
 const lightTheme: ThemeConfigInterface = {
@@ -30,6 +33,11 @@ const lightTheme: ThemeConfigInterface = {
   waktuSolatColor: '#767676',
   waktuSolatTimeColor: '#000',
   waktuSolatTimeFontWeight: 'bold',
+
+  sponsorBackground: '#000',
+  sponsorColor: '#fff',
+
+  footerLogo: '#ddd',
 };
 
 const darkTheme: ThemeConfigInterface = {
@@ -49,6 +57,11 @@ const darkTheme: ThemeConfigInterface = {
   waktuSolatColor: '#777',
   waktuSolatTimeColor: '#ccc',
   waktuSolatTimeFontWeight: 'normal',
+
+  sponsorBackground: '#000',
+  sponsorColor: '#999',
+
+  footerLogo: '#999',
 };
 
 interface ThemesList {
