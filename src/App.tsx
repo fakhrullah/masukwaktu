@@ -136,6 +136,7 @@ function App() {
     const url = UrlParse(window.location.href);
     const locationInUrl = url.pathname.split('/')[1];
     // console.log(`====> ${locationInUrl}`);
+    let locationZone = location.zone;
 
     if (locationInUrl !== '') {
       // console.log(locationInUrl);
@@ -144,24 +145,25 @@ function App() {
         const {
           id, lokasi, negeri, zone, othersInSameZone,
         } = foundZone;
+        locationZone = zone;
         setLocation({
           id, name: lokasi, state: negeri, zone, othersInSameZone,
         });
       }
     }
 
-    fetch(`${apiURL}/times/today.json?zone=${location.zone}`)
+    fetch(`${apiURL}/times/today.json?zone=${locationZone}`)
       .then((response) => response.json())
       .then((data) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { date, ...prayerTimes } = data.prayer_times;
-        setWaktuSolatToday({
-          ...prayerTimes,
-        });
+        // setWaktuSolatToday({
+        //   ...prayerTimes,
+        // });
         console.log(data);
         return prayerTimes;
       })
-      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${location.zone}`)]))
+      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${locationZone}`)]))
       .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([todayPrayerTimes, tomorrowPrayerTimesResponse.json()]))
       .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
         const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
@@ -169,8 +171,11 @@ function App() {
           ...todayPrayerTimes,
           subuh_tomorrow: subuhTomorrow,
         });
+        console.log(tomorrowPrayerTimes);
         setIsLoading(LOADING.DONE);
-      });
+      })
+      .catch((err) => { console.log(err); });
+
     return () => {
     };
   }, [location.zone]);
@@ -234,7 +239,12 @@ function App() {
       <SettingButton onClick={() => setShowSettingSidebarModal(true)} />
 
       <div className={showAzan ? 'shrink' : ''}>
-        <Countdown countdown={[countdownHour, countdownMinutes, countdownSeconds]} />
+        <Countdown countdown={
+          isLoading === LOADING.DONE
+            ? [countdownHour, countdownMinutes, countdownSeconds]
+            : [0, 0, 0]
+          }
+        />
 
         <NextSolatAndLocation>
           <div>
