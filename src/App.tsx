@@ -95,7 +95,7 @@ function App() {
     // console.log(current.getTime());
     const nextSolatTime = waktuSolatToday[nextSolatName];
     const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
-    const currentSolatTime = waktuSolatToday[getCurrentSolatName(nextSolatName)]
+    const currentSolatTime = waktuSolatToday[getCurrentSolatName(nextSolatName)];
 
     // change to next solat
     if (countdownInSeconds <= 0) {
@@ -105,8 +105,7 @@ function App() {
     // Display azan video when azan is just in 3 minutes
     if (
       isLoading === LOADING.DONE
-      &&
-      (current.getTime() - (currentSolatTime * 1000))/1000 <= (3 * 60)
+      && (current.getTime() - (currentSolatTime * 1000)) / 1000 <= (3 * 60)
     ) {
       if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
         setShowAzan(true);
@@ -256,7 +255,7 @@ function App() {
         {
           showAzan
           && <iframe
-            style={{width: '100%', maxWidth: '560px'}}
+            style={{ width: '100%', maxWidth: '560px' }}
             title="azan video"
             width="560"
             height="315"
@@ -302,7 +301,7 @@ function App() {
         isOpen={showLocationModal}
         onRequestClose={() => setShowLocationModal(false)}
         changeLocation={changeLocation}
-        />
+      />
     </div>
   );
 }
