@@ -2,6 +2,8 @@
 interface ThemeConfigInterface {
   webBackground: string;
   logoBackground: string;
+  nonMainTimerColor: string;
+  mainTimerColor: string;
 }
 
 const lightTheme: ThemeConfigInterface = {
@@ -10,6 +12,10 @@ const lightTheme: ThemeConfigInterface = {
 
   // header
   logoBackground: '#c4c4c4',
+
+  // content
+  nonMainTimerColor: '#dfdfdf',
+  mainTimerColor: '#333',
 };
 
 const darkTheme: ThemeConfigInterface = {
@@ -17,6 +23,10 @@ const darkTheme: ThemeConfigInterface = {
 
   // header
   logoBackground: '#000',
+
+  // content
+  nonMainTimerColor: '#000',
+  mainTimerColor: '#999',
 };
 
 interface ThemesList {
