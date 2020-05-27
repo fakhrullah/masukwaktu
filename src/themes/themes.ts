@@ -4,6 +4,8 @@ interface ThemeConfigInterface {
   logoBackground: string;
   nonMainTimerColor: string;
   mainTimerColor: string;
+  nextSolatAndLocationColor: string;
+  sameZoneColor: string;
 }
 
 const lightTheme: ThemeConfigInterface = {
@@ -16,6 +18,9 @@ const lightTheme: ThemeConfigInterface = {
   // content
   nonMainTimerColor: '#dfdfdf',
   mainTimerColor: '#333',
+
+  nextSolatAndLocationColor: '#787878',
+  sameZoneColor: '#c5c5c5',
 };
 
 const darkTheme: ThemeConfigInterface = {
@@ -26,7 +31,10 @@ const darkTheme: ThemeConfigInterface = {
 
   // content
   nonMainTimerColor: '#000',
-  mainTimerColor: '#999',
+  mainTimerColor: '#ccc',
+
+  nextSolatAndLocationColor: '#999',
+  sameZoneColor: '#777',
 };
 
 interface ThemesList {

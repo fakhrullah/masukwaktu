@@ -1,15 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FiEdit2 } from 'react-icons/fi';
+import { ThemesConfig } from './themes/themes';
 
 const NextSolatAndLocation = styled.div`
-  text-align: center;
-  color: #787878;
-  font-family: 'Roboto';
   margin-top: 24px;
-  font-size: 24px;
   padding: 8px;
+  font-family: 'Roboto';
+  text-align: center;
+  font-size: 24px;
   
+  color: ${(props) => ThemesConfig[props.theme.main].nextSolatAndLocationColor};
+
   @media screen and (max-width: 678px) {
     font-size: 16px;
   }
@@ -26,12 +28,12 @@ interface SameZoneProps {
 }
 
 const SameZoneDiv = styled.div`
-  color: #c5c5c5;
   line-height: 32px;
   text-align: center;
   max-width: 600px;
   margin: 0 auto;
   font-size: 16px;
+  color: ${(props) => ThemesConfig[props.theme.main].sameZoneColor};
   
   @media screen and (max-width: 678px) {
     font-size: 12px;
