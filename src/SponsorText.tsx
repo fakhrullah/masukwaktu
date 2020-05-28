@@ -45,7 +45,7 @@ export const SponsorText = (props: Props) => (
       <MasukWaktuLogo size={18} color="#ddd" />
     </span>
     {' '}
-    mencari penaja <strong>RM5k</strong> setahun.
+    mencari penaja <strong>RM6k</strong> setahun.
     {' '}
     <span className="detail-modal" onClick={props.onClick}>selanjutnya</span>
   </SponsorTextDiv>

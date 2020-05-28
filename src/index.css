@@ -60,3 +60,8 @@ code {
   outline: none;
   padding: 20px;
 }
+@media screen and (max-width: 678px) {
+  .modal-sidebar {
+    max-width: 80%;
+  }
+}
