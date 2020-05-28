@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ThemesConfig } from './themes/themes';
 
 const WaktuSolat = styled.div`
-  background-color: #c4c4c4;
+  background-color: ${(props) => ThemesConfig[props.theme.main].waktuSolatBackground};
   width: calc(100vw/7);
   text-align: center;
   padding: 16px 0;
   .name {
-    color: #767676;
+    color: ${(props) => ThemesConfig[props.theme.main].waktuSolatColor};
     font-size: 18px;
 
     @media screen and (max-width: 678px) {
@@ -16,15 +17,15 @@ const WaktuSolat = styled.div`
     }
   }
   .time {
-    color: #000;
+    color: ${(props) => ThemesConfig[props.theme.main].waktuSolatTimeColor};
     font-size: 36px;
-    font-weight: bold;
+    font-weight: ${(props) => ThemesConfig[props.theme.main].waktuSolatTimeFontWeight};
     @media screen and (max-width: 678px) {
       font-size: 16px;
     }
   }
   .ampm {
-    color: #000;
+    color: ${(props) => ThemesConfig[props.theme.main].waktuSolatTimeColor};
     font-size: 18px;
     @media screen and (max-width: 678px) {
       /* font-size: 10px; */

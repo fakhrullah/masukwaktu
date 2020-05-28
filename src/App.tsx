@@ -95,7 +95,7 @@ function App() {
     // console.log(current.getTime());
     const nextSolatTime = waktuSolatToday[nextSolatName];
     const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
-    const currentSolatTime = waktuSolatToday[getCurrentSolatName(nextSolatName)]
+    const currentSolatTime = waktuSolatToday[getCurrentSolatName(nextSolatName)];
 
     // change to next solat
     if (countdownInSeconds <= 0) {
@@ -105,8 +105,7 @@ function App() {
     // Display azan video when azan is just in 3 minutes
     if (
       isLoading === LOADING.DONE
-      &&
-      (current.getTime() - (currentSolatTime * 1000))/1000 <= (3 * 60)
+      && (current.getTime() - (currentSolatTime * 1000)) / 1000 <= (3 * 60)
     ) {
       if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
         setShowAzan(true);
@@ -137,6 +136,7 @@ function App() {
     const url = UrlParse(window.location.href);
     const locationInUrl = url.pathname.split('/')[1];
     // console.log(`====> ${locationInUrl}`);
+    let locationZone = location.zone;
 
     if (locationInUrl !== '') {
       // console.log(locationInUrl);
@@ -145,24 +145,25 @@ function App() {
         const {
           id, lokasi, negeri, zone, othersInSameZone,
         } = foundZone;
+        locationZone = zone;
         setLocation({
           id, name: lokasi, state: negeri, zone, othersInSameZone,
         });
       }
     }
 
-    fetch(`${apiURL}/times/today.json?zone=${location.zone}`)
+    fetch(`${apiURL}/times/today.json?zone=${locationZone}`)
       .then((response) => response.json())
       .then((data) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { date, ...prayerTimes } = data.prayer_times;
-        setWaktuSolatToday({
-          ...prayerTimes,
-        });
+        // setWaktuSolatToday({
+        //   ...prayerTimes,
+        // });
         console.log(data);
         return prayerTimes;
       })
-      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${location.zone}`)]))
+      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${locationZone}`)]))
       .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([todayPrayerTimes, tomorrowPrayerTimesResponse.json()]))
       .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
         const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
@@ -170,8 +171,11 @@ function App() {
           ...todayPrayerTimes,
           subuh_tomorrow: subuhTomorrow,
         });
+        console.log(tomorrowPrayerTimes);
         setIsLoading(LOADING.DONE);
-      });
+      })
+      .catch((err) => { console.log(err); });
+
     return () => {
     };
   }, [location.zone]);
@@ -235,7 +239,12 @@ function App() {
       <SettingButton onClick={() => setShowSettingSidebarModal(true)} />
 
       <div className={showAzan ? 'shrink' : ''}>
-        <Countdown countdown={[countdownHour, countdownMinutes, countdownSeconds]} />
+        <Countdown countdown={
+          isLoading === LOADING.DONE
+            ? [countdownHour, countdownMinutes, countdownSeconds]
+            : [0, 0, 0]
+          }
+        />
 
         <NextSolatAndLocation>
           <div>
@@ -256,7 +265,7 @@ function App() {
         {
           showAzan
           && <iframe
-            style={{width: '100%', maxWidth: '560px'}}
+            style={{ width: '100%', maxWidth: '560px' }}
             title="azan video"
             width="560"
             height="315"
@@ -302,7 +311,7 @@ function App() {
         isOpen={showLocationModal}
         onRequestClose={() => setShowLocationModal(false)}
         changeLocation={changeLocation}
-        />
+      />
     </div>
   );
 }

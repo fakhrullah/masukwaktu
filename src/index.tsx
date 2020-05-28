@@ -1,13 +1,42 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { ThemeProvider, createGlobalStyle } from 'styled-components';
+import URLParse from 'url-parse';
+import { decode as decodeQueryString } from 'querystring';
+
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import './assets/SquadaOne-Monospace.otf';
+import { ThemesConfig } from './themes/themes';
+
+import './index.css';
+
+const GlobalStyle = createGlobalStyle`
+  html, body {
+    background-color: ${(props) => ThemesConfig[props.theme.main].webBackground}
+  }
+`;
+
+
+const parsedUrl = URLParse(window.location.href, true);
+let themeMain = parsedUrl.query.theme || 'light';
+
+switch (themeMain) {
+  case 'light':
+  case 'dark':
+    break;
+
+  default:
+    themeMain = 'light';
+    break;
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={{ main: themeMain }}>
+      <GlobalStyle />
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

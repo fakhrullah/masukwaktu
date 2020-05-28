@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { displayCountdown } from './utils/helpers';
+import { ThemesConfig } from './themes/themes';
 
 const CountdownWrapper = styled.div`
   width: 100%; 
@@ -14,7 +15,7 @@ const CountdownTimer = styled.div`
   font-family: "SquadaOne";
   margin: 32px 0 32px 0;
   letter-spacing: 0.1em;
-  color: #dfdfdf;
+  color: ${(props) => ThemesConfig[props.theme.main].nonMainTimerColor};
   top: 0;
   width: 100%;
 
@@ -22,6 +23,10 @@ const CountdownTimer = styled.div`
     @media screen and (min-width: 678px) {
       font-size: 4vw;
     }
+  }
+
+  &.maintimer {
+    color: ${(props) => ThemesConfig[props.theme.main].mainTimerColor};
   }
 `;
 
@@ -64,11 +69,12 @@ const Countdown = ({ countdown }: Props) => {
       <CountdownTimer>
         {displayCountdown(hour, minutes, second)}
       </CountdownTimer>
-      <CountdownTimer style={{
-        color: '#333',
-        clipPath: `inset(0% 0% 0% ${100 - highlightPercentage}%)`,
-        WebkitClipPath: `inset(0% 0% 0% ${100 - highlightPercentage}%)`,
-      }}
+      <CountdownTimer
+        className="maintimer"
+        style={{
+          clipPath: `inset(0% 0% 0% ${100 - highlightPercentage}%)`,
+          WebkitClipPath: `inset(0% 0% 0% ${100 - highlightPercentage}%)`,
+        }}
       >
         {displayCountdown(hour, minutes, second)}
       </CountdownTimer>

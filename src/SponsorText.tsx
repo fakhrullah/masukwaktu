@@ -3,6 +3,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { MasukWaktuLogo } from './MasukWaktuLogo';
+import { ThemesConfig } from './themes/themes';
 
 interface Props {
   onClick: (event: React.MouseEvent<HTMLSpanElement>) => void
@@ -11,8 +12,8 @@ interface Props {
 const SponsorTextDiv = styled.div`
   text-align: center;
   padding: 8px 0;
-  background-color: #000;
-  color: #fff;
+  background-color: ${(props) => ThemesConfig[props.theme.main].sponsorBackground};
+  color: ${(props) => ThemesConfig[props.theme.main].sponsorColor};
   letter-spacing: 1px;
 
   @media screen and (max-width: 678px) {
@@ -28,6 +29,9 @@ const SponsorTextDiv = styled.div`
 
   .logo-span {
     display: inline-block;
+    > svg {
+      fill: ${(props) => ThemesConfig[props.theme.main].footerLogo} !important;
+    }
     @media screen and (max-width:678px) {
       transform-origin: 100% 80% 0;
       transform: scale(60%);
