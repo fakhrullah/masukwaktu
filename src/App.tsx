@@ -27,6 +27,7 @@ import Countdown from './Countdown';
 import ChooseLocationModal from './ChooseLocationModal';
 
 const apiURL = 'https://solatapi.fajarhac.com';
+const youtubeVideoId = 'PFd8dbaxQc4';
 
 enum LOADING {
   START,
@@ -269,7 +270,7 @@ function App() {
             title="azan video"
             width="560"
             height="315"
-            src="https://www.youtube.com/embed/mUHDYlJHaOQ?autoplay=1&mute=1"
+            src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=1`}
             frameBorder="0"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
