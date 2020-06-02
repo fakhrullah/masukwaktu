@@ -11,6 +11,8 @@ import { ThemesConfig } from './themes/themes';
 
 import './index.css';
 
+const DEFAULT_THEME = 'light';
+
 ReactGA.initialize('UA-42750664-2', {
   debug: window.location.hostname.indexOf('localhost') >= 0,
 });
@@ -22,9 +24,13 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-
 const parsedUrl = URLParse(window.location.href, true);
-let themeMain = parsedUrl.query.theme || 'light';
+
+if (parsedUrl.query.theme) {
+  localStorage.setItem('theme', parsedUrl.query.theme);
+}
+
+let themeMain = localStorage.getItem('theme') || DEFAULT_THEME;
 
 switch (themeMain) {
   case 'light':
@@ -32,7 +38,7 @@ switch (themeMain) {
     break;
 
   default:
-    themeMain = 'light';
+    themeMain = DEFAULT_THEME;
     break;
 }
 
