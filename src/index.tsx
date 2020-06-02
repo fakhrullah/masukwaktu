@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import URLParse from 'url-parse';
-import { decode as decodeQueryString } from 'querystring';
+import ReactGA from 'react-ga';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
@@ -10,6 +10,11 @@ import './assets/SquadaOne-Monospace.otf';
 import { ThemesConfig } from './themes/themes';
 
 import './index.css';
+
+ReactGA.initialize('UA-42750664-2', {
+  debug: window.location.hostname.indexOf('localhost') >= 0,
+});
+ReactGA.pageview(window.location.pathname + window.location.search);
 
 const GlobalStyle = createGlobalStyle`
   html, body {

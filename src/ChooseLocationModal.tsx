@@ -1,5 +1,5 @@
-import React from 'react'
-import ReactModal from 'react-modal'
+import React from 'react';
+import ReactModal from 'react-modal';
 import groupedZonesByStates from './data/group-by-states.json';
 
 interface Zone {
@@ -18,8 +18,11 @@ interface ChooseLocationModalProps {
   changeLocation: (zone: Zone) => void;
 }
 
-const ChooseLocationModal = ({isOpen, onRequestClose, changeLocation}: ChooseLocationModalProps) => {
-  return (
+const ChooseLocationModal = ({
+  isOpen,
+  onRequestClose,
+  changeLocation,
+}: ChooseLocationModalProps) => (
   <ReactModal
     isOpen={isOpen}
     onRequestClose={onRequestClose}
@@ -45,7 +48,6 @@ const ChooseLocationModal = ({isOpen, onRequestClose, changeLocation}: ChooseLoc
       </div>
     ))}
   </ReactModal>
-  )
-}
+);
 
-export default ChooseLocationModal
+export default ChooseLocationModal;

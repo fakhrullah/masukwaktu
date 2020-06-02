@@ -4,6 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import UrlParse from 'url-parse';
+import ReactGA from 'react-ga';
+
 import {
   convertTimestampToHumanTime,
   getNextSolatName,
@@ -216,6 +218,11 @@ function App() {
     url.set('pathname', `/${zone.id}`);
     // window.location.href = url.href;
     window.history.replaceState('', '', `${url.href}`);
+    ReactGA.event({
+      category: 'Location',
+      action: 'Change Location',
+      label: zone.lokasi,
+    });
     setLocation({
       id: zone.id,
       name: zone.lokasi,
