@@ -1,15 +1,31 @@
 import React from 'react';
 import ReactModal from 'react-modal';
+import styled from 'styled-components';
 
 interface Props {
   isOpen: boolean;
   onRequestClose: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
+interface ThemeButtonProps{
+  fontColor? : string;
+  color: string;
+}
+
+const ThemeButton = styled.button<ThemeButtonProps>`
+  color: ${({ fontColor }) => fontColor || '#333'};
+  background-color: ${({ color }) => color};
+  border: solid 2px #222;
+  padding: 4px 16px;
+  border-radius: 16px;
+  margin-left: 8px;
+  cursor: pointer;
+`;
+
 const SettingSidebarModal = ({ isOpen, onRequestClose }: Props) => {
   const changeTheme = (value: string) => {
     localStorage.setItem('theme', value);
-    window.location.href = window.location.href;
+    window.location.replace(window.location.href);
   };
 
   return (
@@ -24,8 +40,8 @@ const SettingSidebarModal = ({ isOpen, onRequestClose }: Props) => {
 
       <h4>Tema warna</h4>
       <div>
-        <button type="button" onClick={() => changeTheme('dark')}>Dark</button>
-        <button type="button" onClick={() => changeTheme('light')}>Light</button>
+        <ThemeButton color="#222" fontColor="#fff" type="button" onClick={() => changeTheme('dark')}>Dark</ThemeButton>
+        <ThemeButton color="#fff" type="button" onClick={() => changeTheme('light')}>Light</ThemeButton>
       </div>
 
       <h4>Tunjuk dan sorok elemen</h4>
