@@ -6,6 +6,7 @@ interface Props {
   isOpen: boolean;
   onRequestClose: (event: React.MouseEvent<HTMLElement>) => void;
   setHideSameZoneDesc: (value: boolean | ((prevVar: boolean) => boolean)) => void;
+  setHideSponsorFooter: (value: boolean | ((prevVar: boolean) => boolean)) => void;
 }
 
 interface ThemeButtonProps{
@@ -24,8 +25,11 @@ const ThemeButton = styled.button<ThemeButtonProps>`
 `;
 
 const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
+const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-sponsor-footer');
 
-const SettingSidebarModal = ({ isOpen, onRequestClose, setHideSameZoneDesc }: Props) => {
+const SettingSidebarModal = ({
+  isOpen, onRequestClose, setHideSameZoneDesc, setHideSponsorFooter,
+}: Props) => {
   const changeTheme = (value: string) => {
     localStorage.setItem('theme', value);
     window.location.replace(window.location.href);
@@ -36,10 +40,18 @@ const SettingSidebarModal = ({ isOpen, onRequestClose, setHideSameZoneDesc }: Pr
     const currentSameZoneChecked = hideSameZoneChecked;
     localStorage.setItem('hide-same-zone-desc', currentSameZoneChecked ? '' : 'set');
     setHideSameZoneChecked(!currentSameZoneChecked);
-    setHideSameZoneDesc(!currentSameZoneChecked)
+    setHideSameZoneDesc(!currentSameZoneChecked);
+  };
+
+  const toggleHideSponsorFooterConfig = () => {
+    const currentHideSponsorFooterChecked = hideSponsorChecked;
+    localStorage.setItem('hide-sponsor-footer', currentHideSponsorFooterChecked ? '' : 'set');
+    setHideSponsorChecked(!currentHideSponsorFooterChecked);
+    setHideSponsorFooter(!currentHideSponsorFooterChecked);
   };
 
   const [hideSameZoneChecked, setHideSameZoneChecked] = useState(initialStateHideSameZoneDesc);
+  const [hideSponsorChecked, setHideSponsorChecked] = useState(initialStateHideSponsorFooter);
 
   return (
     <ReactModal
@@ -58,21 +70,33 @@ const SettingSidebarModal = ({ isOpen, onRequestClose, setHideSameZoneDesc }: Pr
       </div>
 
       <h4>Tunjuk dan sorok elemen</h4>
-      <p>
-        <em>dalam proses pembangunan</em>
-      </p>
       <div>
-        <label htmlFor="hide-same-zone-desc-config">
-          <input
-            type="checkbox"
-            name="hide-same-zone-desc"
-            id="hide-same-zone-desc-config"
-            onChange={changeHideSameZoneConfig}
-            checked={hideSameZoneChecked}
-          />
-          {' '}
-          Sorok <q>dan kawasan-kawasan sewaktu dengannya</q>
-        </label>
+        <div>
+          <label htmlFor="hide-same-zone-desc-config">
+            <input
+              type="checkbox"
+              name="hide-same-zone-desc"
+              id="hide-same-zone-desc-config"
+              onChange={changeHideSameZoneConfig}
+              checked={hideSameZoneChecked}
+            />
+            {' '}
+            Sorok <q>dan kawasan-kawasan sewaktu dengannya</q>
+          </label>
+        </div>
+        <div>
+          <label htmlFor="hide-sponsor-footer-config">
+            <input
+              type="checkbox"
+              name="hide-sponsor-footer"
+              id="hide-sponsor-footer-config"
+              onChange={toggleHideSponsorFooterConfig}
+              checked={hideSponsorChecked}
+            />
+            {' '}
+            Sorok penaja pada bahagian bawah skrin
+          </label>
+        </div>
       </div>
 
       <h4>Iqamah</h4>

@@ -72,6 +72,7 @@ const initialLocation: LocationDetail = {
 };
 
 const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
+const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-sponsor-footer');
 
 ReactModal.setAppElement('#root');
 
@@ -97,6 +98,7 @@ function App() {
 
   // configutarions
   const [hideSameZoneDesc, setHideSameZoneDesc] = useState(initialStateHideSameZoneDesc);
+  const [hideSponsorFooter, setHideSponsorFooter] = useState(initialStateHideSponsorFooter);
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
@@ -306,14 +308,17 @@ function App() {
             />
           ))}
         </div>
-
-        <SponsorText onClick={showSponsorModal} />
+        {
+        hideSponsorFooter
+        || <SponsorText onClick={showSponsorModal} />
+        }
       </footer>
       <AboutModal
         isOpen={showAboutModal}
         onRequestClose={() => setShowAboutModal(false)}
       />
       <SettingSidebarModal
+        setHideSponsorFooter={setHideSponsorFooter}
         setHideSameZoneDesc={setHideSameZoneDesc}
         isOpen={showSettingSidebarModal}
         onRequestClose={() => setShowSettingSidebarModal(false)}
