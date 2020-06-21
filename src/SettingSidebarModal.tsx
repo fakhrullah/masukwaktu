@@ -24,6 +24,12 @@ const ThemeButton = styled.button<ThemeButtonProps>`
   cursor: pointer;
 `;
 
+const Label = styled.label`
+  display: block;
+  cursor: pointer;
+  padding: 8px 0px;
+`
+
 const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
 const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-sponsor-footer');
 
@@ -71,32 +77,28 @@ const SettingSidebarModal = ({
 
       <h4>Tunjuk dan sorok elemen</h4>
       <div>
-        <div>
-          <label htmlFor="hide-same-zone-desc-config">
-            <input
-              type="checkbox"
-              name="hide-same-zone-desc"
-              id="hide-same-zone-desc-config"
-              onChange={changeHideSameZoneConfig}
-              checked={hideSameZoneChecked}
-            />
-            {' '}
-            Sorok <q>dan kawasan-kawasan sewaktu dengannya</q>
-          </label>
-        </div>
-        <div>
-          <label htmlFor="hide-sponsor-footer-config">
-            <input
-              type="checkbox"
-              name="hide-sponsor-footer"
-              id="hide-sponsor-footer-config"
-              onChange={toggleHideSponsorFooterConfig}
-              checked={hideSponsorChecked}
-            />
-            {' '}
-            Sorok penaja pada bahagian bawah skrin
-          </label>
-        </div>
+        <Label htmlFor="hide-same-zone-desc-config">
+          <input
+            type="checkbox"
+            name="hide-same-zone-desc"
+            id="hide-same-zone-desc-config"
+            onChange={changeHideSameZoneConfig}
+            checked={hideSameZoneChecked}
+          />
+          {' '}
+          Sorok <q>dan kawasan-kawasan sewaktu dengannya</q>
+        </Label>
+        <Label htmlFor="hide-sponsor-footer-config">
+          <input
+            type="checkbox"
+            name="hide-sponsor-footer"
+            id="hide-sponsor-footer-config"
+            onChange={toggleHideSponsorFooterConfig}
+            checked={hideSponsorChecked}
+          />
+          {' '}
+          Sorok penaja pada bahagian bawah skrin
+        </Label>
       </div>
 
       <h4>Iqamah</h4>
