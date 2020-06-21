@@ -25,6 +25,7 @@ const NextSolatAndLocation = styled.div`
 
 interface SameZoneProps {
   othersLocationInSameZone: Array<string>
+  hideSameZoneDesc: boolean
 }
 
 const SameZoneDiv = styled.div`
@@ -46,9 +47,11 @@ const SameZoneDiv = styled.div`
 
 const SameZone = (props: SameZoneProps) => (
   <SameZoneDiv>
+    {props.hideSameZoneDesc
+    ||
     <div>
       dan kawasan-kawasan yang sama waktu dengannya
-    </div>
+    </div>}
     <div>
       {props.othersLocationInSameZone.join(' | ')}
     </div>

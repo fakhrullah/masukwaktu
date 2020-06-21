@@ -71,6 +71,9 @@ const initialLocation: LocationDetail = {
   othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR'],
 };
 
+const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
+const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-sponsor-footer');
+
 ReactModal.setAppElement('#root');
 
 function App() {
@@ -92,6 +95,10 @@ function App() {
 
   // show azan
   const [showAzan, setShowAzan] = useState(false);
+
+  // configutarions
+  const [hideSameZoneDesc, setHideSameZoneDesc] = useState(initialStateHideSameZoneDesc);
+  const [hideSponsorFooter, setHideSponsorFooter] = useState(initialStateHideSponsorFooter);
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
@@ -197,10 +204,7 @@ function App() {
   }, [waktuSolatToday, waktuSolatToday.imsak]);
 
   const chooseLocation = () => {
-    console.group('modal-to-choose-place');
     console.info('SHOW Modal to choose location');
-    console.table([['selangor', 'sgr01'], ['selangor', 'sgr02'], ['terengganu', 'setiu']]);
-    console.groupEnd();
 
     setShowLocationModal(true);
   };
@@ -265,7 +269,7 @@ function App() {
             <SolatLocation name={location.name} onClick={chooseLocation} />
             <ChangeLocationButton onClick={chooseLocation} />
           </div>
-          <SameZone othersLocationInSameZone={location.othersInSameZone} />
+          <SameZone othersLocationInSameZone={location.othersInSameZone} hideSameZoneDesc={hideSameZoneDesc} />
         </NextSolatAndLocation>
       </div>
 
@@ -304,14 +308,18 @@ function App() {
             />
           ))}
         </div>
-
-        <SponsorText onClick={showSponsorModal} />
+        {
+        hideSponsorFooter
+        || <SponsorText onClick={showSponsorModal} />
+        }
       </footer>
       <AboutModal
         isOpen={showAboutModal}
         onRequestClose={() => setShowAboutModal(false)}
       />
       <SettingSidebarModal
+        setHideSponsorFooter={setHideSponsorFooter}
+        setHideSameZoneDesc={setHideSameZoneDesc}
         isOpen={showSettingSidebarModal}
         onRequestClose={() => setShowSettingSidebarModal(false)}
       />
