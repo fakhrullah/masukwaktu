@@ -71,6 +71,8 @@ const initialLocation: LocationDetail = {
   othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR'],
 };
 
+const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
+
 ReactModal.setAppElement('#root');
 
 function App() {
@@ -92,6 +94,9 @@ function App() {
 
   // show azan
   const [showAzan, setShowAzan] = useState(false);
+
+  // configutarions
+  const [hideSameZoneDesc, setHideSameZoneDesc] = useState(initialStateHideSameZoneDesc);
 
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
@@ -197,10 +202,7 @@ function App() {
   }, [waktuSolatToday, waktuSolatToday.imsak]);
 
   const chooseLocation = () => {
-    console.group('modal-to-choose-place');
     console.info('SHOW Modal to choose location');
-    console.table([['selangor', 'sgr01'], ['selangor', 'sgr02'], ['terengganu', 'setiu']]);
-    console.groupEnd();
 
     setShowLocationModal(true);
   };
@@ -265,7 +267,7 @@ function App() {
             <SolatLocation name={location.name} onClick={chooseLocation} />
             <ChangeLocationButton onClick={chooseLocation} />
           </div>
-          <SameZone othersLocationInSameZone={location.othersInSameZone} />
+          <SameZone othersLocationInSameZone={location.othersInSameZone} hideSameZoneDesc={hideSameZoneDesc} />
         </NextSolatAndLocation>
       </div>
 
@@ -312,6 +314,7 @@ function App() {
         onRequestClose={() => setShowAboutModal(false)}
       />
       <SettingSidebarModal
+        setHideSameZoneDesc={setHideSameZoneDesc}
         isOpen={showSettingSidebarModal}
         onRequestClose={() => setShowSettingSidebarModal(false)}
       />

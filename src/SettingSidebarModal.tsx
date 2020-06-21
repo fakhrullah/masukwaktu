@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactModal from 'react-modal';
 import styled from 'styled-components';
 
 interface Props {
   isOpen: boolean;
   onRequestClose: (event: React.MouseEvent<HTMLElement>) => void;
+  setHideSameZoneDesc: (value: boolean | ((prevVar: boolean) => boolean)) => void;
 }
 
 interface ThemeButtonProps{
@@ -22,11 +23,23 @@ const ThemeButton = styled.button<ThemeButtonProps>`
   cursor: pointer;
 `;
 
-const SettingSidebarModal = ({ isOpen, onRequestClose }: Props) => {
+const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
+
+const SettingSidebarModal = ({ isOpen, onRequestClose, setHideSameZoneDesc }: Props) => {
   const changeTheme = (value: string) => {
     localStorage.setItem('theme', value);
     window.location.replace(window.location.href);
   };
+
+  const changeHideSameZoneConfig = () => {
+    // console.log(hideSameZoneChecked);
+    const currentSameZoneChecked = hideSameZoneChecked;
+    localStorage.setItem('hide-same-zone-desc', currentSameZoneChecked ? '' : 'set');
+    setHideSameZoneChecked(!currentSameZoneChecked);
+    setHideSameZoneDesc(!currentSameZoneChecked)
+  };
+
+  const [hideSameZoneChecked, setHideSameZoneChecked] = useState(initialStateHideSameZoneDesc);
 
   return (
     <ReactModal
@@ -48,6 +61,19 @@ const SettingSidebarModal = ({ isOpen, onRequestClose }: Props) => {
       <p>
         <em>dalam proses pembangunan</em>
       </p>
+      <div>
+        <label htmlFor="hide-same-zone-desc-config">
+          <input
+            type="checkbox"
+            name="hide-same-zone-desc"
+            id="hide-same-zone-desc-config"
+            onChange={changeHideSameZoneConfig}
+            checked={hideSameZoneChecked}
+          />
+          {' '}
+          Sorok <q>dan kawasan-kawasan sewaktu dengannya</q>
+        </label>
+      </div>
 
       <h4>Iqamah</h4>
       <p>
