@@ -27,41 +27,70 @@ import AboutModal from './AboutModal';
 import SettingSidebarModal from './SettingSidebarModal';
 import Countdown from './Countdown';
 import ChooseLocationModal from './ChooseLocationModal';
+import { ZoneLocationInterface, LOADING, LocationDetail } from './interfaces';
 
 const apiURL = 'https://solatapi.fajarhac.com';
 const youtubeVideoId = 'PFd8dbaxQc4';
 
-enum LOADING {
-  START,
-  PROGRESS,
-  DONE
-}
-
-interface MyType {
-  [key: string]: number;
-}
-
 const currentTimestamp: number = (new Date()).getTime();
 
-const initialWaktuSolatToday: MyType = {
-  datestamp: currentTimestamp,
-  imsak: currentTimestamp,
-  subuh: currentTimestamp,
-  syuruk: currentTimestamp,
-  zohor: currentTimestamp,
-  asar: currentTimestamp,
-  maghrib: currentTimestamp,
-  isyak: currentTimestamp,
-  subuh_tomorrow: currentTimestamp,
-};
-
-interface LocationDetail {
+interface Waktu {
+  type: string;
   id: string;
   name: string;
-  state: string;
-  zone: string;
-  othersInSameZone: Array<string>;
+  timestamp: number;
 }
+
+const initialWaktuSolatDanIqamahToday: Array<Waktu> = [
+  {
+    type: 'imsak',
+    id: 'imsak',
+    name: 'Imsak',
+    timestamp: currentTimestamp,
+  },
+  {
+    type: 'solat',
+    id: 'subuh',
+    name: 'Subuh',
+    timestamp: currentTimestamp,
+  },
+  {
+    type: 'syuruk',
+    id: 'syuruk',
+    name: 'Syuruk',
+    timestamp: currentTimestamp,
+  },
+  {
+    type: 'solat',
+    id: 'zohor',
+    name: 'Zohor',
+    timestamp: currentTimestamp,
+  },
+  {
+    type: 'solat',
+    id: 'asar',
+    name: 'Asar',
+    timestamp: currentTimestamp,
+  },
+  {
+    type: 'solat',
+    id: 'maghrib',
+    name: 'Maghrib',
+    timestamp: currentTimestamp,
+  },
+  {
+    type: 'solat',
+    id: 'isyak',
+    name: 'Isyak',
+    timestamp: currentTimestamp,
+  },
+  {
+    type: 'solat',
+    id: 'subuh_tomorrow',
+    name: 'Subuh Esok',
+    timestamp: currentTimestamp,
+  },
+];
 
 const initialLocation: LocationDetail = {
   id: 'kuala-lumpur_wilayah',
@@ -84,7 +113,7 @@ function App() {
   const [countdownMinutes, setCountdownMinutes] = useState(0);
   const [countdownSeconds, setCountdownSeconds] = useState(0);
 
-  const [waktuSolatToday, setWaktuSolatToday] = useState(initialWaktuSolatToday);
+  const [waktuSolatToday, setWaktuSolatToday] = useState(initialWaktuSolatDanIqamahToday);
   const [location, setLocation] = useState(initialLocation);
   const [isLoading, setIsLoading] = useState(LOADING.START);
 
@@ -103,13 +132,17 @@ function App() {
   function calculateCountdown(nextSolatName: string) {
     const current = new Date();
     // console.log(current.getTime());
-    const nextSolatTime = waktuSolatToday[nextSolatName];
+    const nextSolatData = waktuSolatToday.findIndex((waktu) => waktu.id === nextSolatName);
+    const nextSolatTime = waktuSolatToday.filter((waktu) => waktu.id === nextSolatName)[0]?.timestamp;
     const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
-    const currentSolatTime = waktuSolatToday[getCurrentSolatName(nextSolatName)];
+    const currentSolatTime = waktuSolatToday[nextSolatData - 1].timestamp;
 
-    // change to next solat
+    // Change to next solat
     if (countdownInSeconds <= 0) {
       setNextSolat(getNextSolatName(nextSolat));
+      setIsLoading(LOADING.PROGRESS);
+    } else {
+      setIsLoading(LOADING.DONE);
     }
 
     // Display azan video when azan is just in 3 minutes
@@ -140,7 +173,7 @@ function App() {
     calculateCountdown(nextSolat);
   }, 1000);
 
-  // request solat time from API, then set the time
+  // Request solat time from API, then set the time
   useEffect(() => {
     setIsLoading(LOADING.PROGRESS);
     const url = UrlParse(window.location.href);
@@ -177,11 +210,11 @@ function App() {
       .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([todayPrayerTimes, tomorrowPrayerTimesResponse.json()]))
       .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
         const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
-        setWaktuSolatToday({
-          ...todayPrayerTimes,
-          subuh_tomorrow: subuhTomorrow,
-        });
-        console.log(tomorrowPrayerTimes);
+        const allPrayerTimes = { ...todayPrayerTimes, subuh_tomorrow: subuhTomorrow };
+        const updatedSolatAndIqamahTimes = initialWaktuSolatDanIqamahToday
+          .map(({ timestamp, id, ...waktu }) => ({ ...waktu, id, timestamp: allPrayerTimes[id] }));
+        setWaktuSolatToday(updatedSolatAndIqamahTimes);
+        // console.log(tomorrowPrayerTimes);
         setIsLoading(LOADING.DONE);
       })
       .catch((err) => { console.log(err); });
@@ -190,32 +223,11 @@ function App() {
     };
   }, [location.zone]);
 
-  useEffect(() => {
-    const currentTimestampInSeconds = Math.floor((new Date()).getTime() / 1000);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { imsak, datestamp, ...tempWaktuSolatToday } = waktuSolatToday;
-    tempWaktuSolatToday.now = currentTimestampInSeconds;
-    const timeArray = Object.entries(tempWaktuSolatToday);
-    const sortedTimeArray = timeArray.sort(([keyA, valueA], [keyB, valueB]) => (valueA >= valueB ? 1 : -1));
-    // console.log(sortedTimeArray);
-    const indexOfNextSolat = sortedTimeArray.findIndex((solatTime) => solatTime.includes('now')) + 1;
-    setNextSolat(sortedTimeArray[indexOfNextSolat][0]);
-    // console.log(indexOfNextSolat);
-  }, [waktuSolatToday, waktuSolatToday.imsak]);
-
   const chooseLocation = () => {
     console.info('SHOW Modal to choose location');
 
     setShowLocationModal(true);
   };
-
-  interface ZoneLocationInterface {
-    id: string,
-    zone: string,
-    lokasi: string,
-    negeri: string,
-    othersInSameZone: Array<string>,
-  }
 
   const changeLocation = (zone: ZoneLocationInterface) => {
     const url = UrlParse(window.location.href);
@@ -291,22 +303,20 @@ function App() {
 
       <footer style={{ position: 'fixed', bottom: '0' }}>
         <div style={{ display: 'flex' }}>
-          {[
-            'imsak',
-            'subuh',
-            'syuruk',
-            'zohor',
-            'asar',
-            'maghrib',
-            'isyak',
-          ].map((solat) => (
-            <WaktuSolatDiv
-              key={solat}
-              name={solat.toUpperCase()}
-              time={isLoading === LOADING.DONE ? convertTimestampToHumanTime(waktuSolatToday[solat]) : '--:--'}
-              ampm="am"
-            />
-          ))}
+          {
+            waktuSolatToday
+              .filter(((waktu) => waktu.type === 'solat' || waktu.type === 'syuruk'))
+              .map((waktu) => (
+                <WaktuSolatDiv
+                  key={waktu.id}
+                  name={waktu.name.toUpperCase()}
+                  time={isLoading === LOADING.DONE
+                    ? convertTimestampToHumanTime(waktu.timestamp)
+                    : '--:--'}
+                  ampm="am"
+                />
+              ))
+          }
         </div>
         {
         hideSponsorFooter
