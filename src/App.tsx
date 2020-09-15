@@ -30,8 +30,8 @@ import ChooseLocationModal from './ChooseLocationModal';
 import { ZoneLocationInterface, LOADING, LocationDetail } from './interfaces';
 import { Waktu, initializeWaktuSolatData, initializeWaktuIqamahData } from './WaktuModel';
 
-const apiURL = 'https://solatapi.fajarhac.com';
-const youtubeVideoId = 'PFd8dbaxQc4';
+const apiURL: string = 'https://solatapi.fajarhac.com';
+const youtubeVideoId: string = 'PFd8dbaxQc4';
 
 const initialWaktuSolatDanIqamahToday: Array<Waktu> = initializeWaktuSolatData();
 
@@ -73,7 +73,7 @@ function App() {
   const [hideSameZoneDesc, setHideSameZoneDesc] = useState(initialStateHideSameZoneDesc);
   const [hideSponsorFooter, setHideSponsorFooter] = useState(initialStateHideSponsorFooter);
 
-  function calculateCountdown(nextWaktu: number) {
+  function calculateCountdown(currentWaktuIndex: number) {
     const current = new Date();
     const currentTime = current.getTime();
     // console.log(current.getTime());
@@ -82,8 +82,11 @@ function App() {
     // const countdownInSeconds = nextSolatTime - (currentTime / 1000);
     // const currentSolatTime = waktuSolatToday[nextSolatData - 1].timestamp;
 
-    const currentWaktuTime = waktuSolatToday[currentWaktuIndex].timestamp;
-    const nextWaktuTime = waktuSolatToday[currentWaktuIndex + 1].timestamp;
+    const allWaktu = waktuSolatToday;
+    const currentWaktu = allWaktu[currentWaktuIndex];
+    const currentWaktuTime = currentWaktu.timestamp;
+    const nextWaktu = allWaktu[currentWaktuIndex + 1];
+    const nextWaktuTime = nextWaktu.timestamp;
     const countdownInSeconds = nextWaktuTime - (currentTime / 1000);
 
     // Change to next solat
@@ -101,11 +104,13 @@ function App() {
       isLoading === LOADING.DONE
       && timeElapsedFromLastSolat <= (3 * 60)
     ) {
-      if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
-        setShowAzan(true);
-        setTimeout(() => {
-          setShowAzan(false);
-        }, 5 * 60 * 1000);
+      // if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
+      if (currentWaktu.type === 'solat') {
+        // setShowAzan(true);
+        // setTimeout(() => {
+        //   setShowAzan(false);
+        // }, 5 * 60 * 1000);
+        console.log('#---- Show Azan #');
       }
     }
 
@@ -158,7 +163,10 @@ function App() {
         return prayerTimes;
       })
       .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${locationZone}`)]))
-      .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([todayPrayerTimes, tomorrowPrayerTimesResponse.json()]))
+      .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([
+        todayPrayerTimes,
+        tomorrowPrayerTimesResponse.json(),
+      ]))
       .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
         const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
         const allPrayerTimes = { ...todayPrayerTimes, subuh_tomorrow: subuhTomorrow };
@@ -239,16 +247,37 @@ function App() {
 
         <NextSolatAndLocation>
           <div>
-            Sebelum Masuk Waktu
-            {' '}
-            <NextSolat name={waktuSolatToday[currentWaktuIndex].name} />
-            {' '}
-            di
-            {' '}
-            <SolatLocation name={location.name} onClick={chooseLocation} />
-            <ChangeLocationButton onClick={chooseLocation} />
+            <div>
+              {
+                waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
+                && `Sebelum ${waktuSolatToday[currentWaktuIndex + 1].name} dilaungkan`
+              }
+            </div>
+            <div>
+              {
+                waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
+                  ? <>
+                    Telah Masuk Waktu
+                    {' '}
+                    <NextSolat name={waktuSolatToday[currentWaktuIndex].name} />
+                    </>
+                  : <>
+                    Sebelum Masuk Waktu
+                    {' '}
+                    <NextSolat name={waktuSolatToday[currentWaktuIndex + 1].name} />
+                    </>
+              }
+              {' '}
+              di
+              {' '}
+              <SolatLocation name={location.name} onClick={chooseLocation} />
+              <ChangeLocationButton onClick={chooseLocation} />
+            </div>
           </div>
-          <SameZone othersLocationInSameZone={location.othersInSameZone} hideSameZoneDesc={hideSameZoneDesc} />
+          <SameZone
+            othersLocationInSameZone={location.othersInSameZone}
+            hideSameZoneDesc={hideSameZoneDesc}
+          />
         </NextSolatAndLocation>
       </div>
 
