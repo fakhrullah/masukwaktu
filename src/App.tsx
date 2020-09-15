@@ -12,6 +12,7 @@ import {
   getCurrentSolatName,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logCurrentCountdown,
+  getAmPm,
 } from './utils/helpers';
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
@@ -301,7 +302,7 @@ function App() {
         <div style={{ display: 'flex' }}>
           {
             waktuSolatToday
-              .filter(((waktu) => waktu.type === 'solat' || waktu.type === 'syuruk' || waktu.type === 'imsak'))
+              .filter(((waktu) => waktu.type === 'solat' || waktu.type === 'syuruk'))
               .map((waktu) => (
                 <WaktuSolatDiv
                   key={waktu.id}
@@ -309,7 +310,7 @@ function App() {
                   time={isLoading === LOADING.DONE
                     ? convertTimestampToHumanTime(waktu.timestamp)
                     : '--:--'}
-                  ampm="am"
+                  ampm={isLoading === LOADING.DONE ? getAmPm(waktu.timestamp) : ''}
                 />
               ))
           }

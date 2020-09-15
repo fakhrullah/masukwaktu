@@ -8,6 +8,10 @@ function convertTimestampToHumanTime(timestamp: number): string {
   return `${formattedHour}:${formattedMinute}`;
 }
 
+function getAmPm(waktuTimestamp: number): string {
+  return (new Date(waktuTimestamp * 1000).getHours() >= 12) ? 'pm' : 'am';
+}
+
 function displayCountdown(hour: number, minute: number, second: number) : string {
   const hourTwoDigits = hour >= 10 ? hour : `0${hour}`;
   const minuteTwoDigits = minute >= 10 ? minute : `0${minute}`;
@@ -53,4 +57,5 @@ export {
   getNextSolatName,
   getCurrentSolatName,
   logCurrentCountdown,
+  getAmPm,
 };
