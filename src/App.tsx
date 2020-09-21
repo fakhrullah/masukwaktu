@@ -19,6 +19,7 @@ import { SettingButton } from './SettingButton';
 import {
   NextSolatAndLocation, SameZone, NextSolat,
   SolatLocation, ChangeLocationButton,
+  Headline, SubHeadline,
 } from './NextSolatAndLocation';
 import { SponsorText } from './SponsorText';
 import Header from './Header';
@@ -247,34 +248,33 @@ function App() {
         />
 
         <NextSolatAndLocation>
-          <div>
-            <div>
-              {
-                waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
-                && `Sebelum ${waktuSolatToday[currentWaktuIndex + 1].name} dilaungkan`
-              }
-            </div>
-            <div>
-              {
-                waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
-                  ? <>
-                    Telah Masuk Waktu
-                    {' '}
-                    <NextSolat name={waktuSolatToday[currentWaktuIndex].name} />
-                    </>
-                  : <>
-                    Sebelum Masuk Waktu
-                    {' '}
-                    <NextSolat name={waktuSolatToday[currentWaktuIndex + 1].name} />
-                    </>
-              }
-              {' '}
-              di
-              {' '}
-              <SolatLocation name={location.name} onClick={chooseLocation} />
-              <ChangeLocationButton onClick={chooseLocation} />
-            </div>
-          </div>
+          {
+            waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
+              ? <>
+                <Headline>
+                  {`Sebelum ${waktuSolatToday[currentWaktuIndex + 1].name} dilaungkan`}
+                </Headline>
+                <SubHeadline>
+                  Telah Masuk Waktu
+                  {' '}
+                  <NextSolat name={waktuSolatToday[currentWaktuIndex].name} />
+                  {' '}
+                  di
+                  {' '}
+                  <SolatLocation name={location.name} onClick={chooseLocation} />
+                </SubHeadline>
+                </>
+              : <Headline>
+                Sebelum Masuk Waktu
+                {' '}
+                <NextSolat name={waktuSolatToday[currentWaktuIndex + 1].name} />
+                {' '}
+                di
+                {' '}
+                <SolatLocation name={location.name} onClick={chooseLocation} />
+                <ChangeLocationButton onClick={chooseLocation} />
+                </Headline>
+            }
           <SameZone
             othersLocationInSameZone={location.othersInSameZone}
             hideSameZoneDesc={hideSameZoneDesc}

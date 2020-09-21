@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { FiEdit2 } from 'react-icons/fi';
 import { ThemesConfig } from './themes/themes';
@@ -20,6 +20,39 @@ const NextSolatAndLocation = styled.div`
     font-size: 12px;
   }
 `;
+
+// -------------------------
+
+const HeadlineDiv = styled.div``;
+
+const Headline: FunctionComponent = (props) => (
+  <HeadlineDiv>
+    {props.children}
+  </HeadlineDiv>
+);
+
+const SubHeadlineDiv = styled.div`
+  line-height: 32px;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 16px;
+  color: ${(props) => ThemesConfig[props.theme.main].sameZoneColor};
+
+  @media screen and (max-width: 678px) {
+    font-size: 12px;
+    line-height: 20px;
+  }
+  @media screen and (max-width: 478px) {
+    font-size: 10px;
+  }
+`;
+
+const SubHeadline: FunctionComponent = (props) => (
+  <SubHeadlineDiv>
+    {props.children}
+  </SubHeadlineDiv>
+);
 
 // -------------------------
 
@@ -48,8 +81,7 @@ const SameZoneDiv = styled.div`
 const SameZone = (props: SameZoneProps) => (
   <SameZoneDiv>
     {props.hideSameZoneDesc
-    ||
-    <div>
+    || <div>
       dan kawasan-kawasan yang sama waktu dengannya
     </div>}
     <div>
@@ -142,4 +174,6 @@ export {
   SolatLocation,
   NextSolat,
   ChangeLocationButton,
+  SubHeadline,
+  Headline,
 };
