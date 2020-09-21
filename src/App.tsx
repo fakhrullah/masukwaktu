@@ -4,12 +4,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import UrlParse from 'url-parse';
-import ReactGA from 'react-ga';
 
 import {
   convertTimestampToHumanTime,
   getNextSolatName,
-  getCurrentSolatName,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logCurrentCountdown,
   getAmPm,
@@ -17,9 +15,8 @@ import {
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
 import {
-  NextSolatAndLocation, SameZone, NextSolat,
-  SolatLocation, ChangeLocationButton,
-  Headline, SubHeadline,
+  NextSolatAndLocation, SameZone,
+  TextOfIqamahAndCurrentSolat, TextOfNextSolat,
 } from './NextSolatAndLocation';
 import { SponsorText } from './SponsorText';
 import Header from './Header';
@@ -29,21 +26,17 @@ import AboutModal from './AboutModal';
 import SettingSidebarModal from './SettingSidebarModal';
 import Countdown from './Countdown';
 import ChooseLocationModal from './ChooseLocationModal';
-import { ZoneLocationInterface, LOADING, LocationDetail } from './interfaces';
+import { ZoneLocationInterface, LOADING } from './interfaces';
 import { Waktu, initializeWaktuSolatData, initializeWaktuIqamahData } from './WaktuModel';
+import { initializeLocation, LocationDetail } from './LocationModel';
+import { Analytics } from './Analytics';
 
 const apiURL: string = 'https://solatapi.fajarhac.com';
 const youtubeVideoId: string = 'PFd8dbaxQc4';
 
 const initialWaktuSolatDanIqamahToday: Array<Waktu> = initializeWaktuSolatData();
 
-const initialLocation: LocationDetail = {
-  id: 'kuala-lumpur_wilayah',
-  name: 'Kuala Lumpur',
-  state: 'Wilayah',
-  zone: 'wly01',
-  othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR'],
-};
+const initialLocation: LocationDetail = initializeLocation();
 
 const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
 const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-sponsor-footer');
@@ -51,7 +44,6 @@ const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-spon
 ReactModal.setAppElement('#root');
 
 function App() {
-  const [seconds, setSeconds] = useState<number>(0);
   const [nextSolat, setNextSolat] = useState<string>('subuh');
   const [currentWaktuIndex, setCurrentWaktuIndex] = useState<number>(0);
 
@@ -60,7 +52,7 @@ function App() {
   const [countdownSeconds, setCountdownSeconds] = useState<number>(0);
 
   const [waktuSolatToday, setWaktuSolatToday] = useState<Waktu[]>(initialWaktuSolatDanIqamahToday);
-  const [location, setLocation] = useState(initialLocation);
+  const [location, setLocation] = useState<LocationDetail>(initialLocation);
   const [isLoading, setIsLoading] = useState<LOADING>(LOADING.START);
 
   // modal states
@@ -75,19 +67,14 @@ function App() {
   const [hideSameZoneDesc, setHideSameZoneDesc] = useState(initialStateHideSameZoneDesc);
   const [hideSponsorFooter, setHideSponsorFooter] = useState(initialStateHideSponsorFooter);
 
-  function calculateCountdown(currentWaktuIndex: number) {
+  function calculateCountdown(waktuIndex: number) {
     const current = new Date();
     const currentTime = current.getTime();
-    // console.log(current.getTime());
-    // const nextSolatData = waktuSolatToday.findIndex((waktu) => waktu.id === nextSolatName);
-    // const nextSolatTime = waktuSolatToday.filter((waktu) => waktu.id === nextSolatName)[0]?.timestamp;
-    // const countdownInSeconds = nextSolatTime - (currentTime / 1000);
-    // const currentSolatTime = waktuSolatToday[nextSolatData - 1].timestamp;
 
     const allWaktu = waktuSolatToday;
-    const currentWaktu = allWaktu[currentWaktuIndex];
+    const currentWaktu = allWaktu[waktuIndex];
     const currentWaktuTime = currentWaktu.timestamp;
-    const nextWaktu = allWaktu[currentWaktuIndex + 1];
+    const nextWaktu = allWaktu[waktuIndex + 1];
     const nextWaktuTime = nextWaktu.timestamp;
     const countdownInSeconds = nextWaktuTime - (currentTime / 1000);
 
@@ -95,7 +82,7 @@ function App() {
     if (countdownInSeconds <= 0) {
       setIsLoading(LOADING.PROGRESS);
       setNextSolat(getNextSolatName(nextSolat));
-      setCurrentWaktuIndex(currentWaktuIndex + 1);
+      setCurrentWaktuIndex(waktuIndex + 1);
     } else {
       setIsLoading(LOADING.DONE);
     }
@@ -123,11 +110,6 @@ function App() {
   }
 
   useInterval(() => {
-    if (seconds >= 59) {
-      setSeconds(0);
-    } else {
-      setSeconds(seconds + 1);
-    }
     calculateCountdown(currentWaktuIndex);
   }, 1000);
 
@@ -202,7 +184,6 @@ function App() {
 
   const chooseLocation = () => {
     console.info('SHOW Modal to choose location');
-
     setShowLocationModal(true);
   };
 
@@ -211,11 +192,7 @@ function App() {
     url.set('pathname', `/${zone.id}`);
     // window.location.href = url.href;
     window.history.replaceState('', '', `${url.href}`);
-    ReactGA.event({
-      category: 'Location',
-      action: 'Change Location',
-      label: zone.lokasi,
-    });
+    Analytics.changeLocationEvent(zone.lokasi);
     setLocation({
       id: zone.id,
       name: zone.lokasi,
@@ -250,30 +227,17 @@ function App() {
         <NextSolatAndLocation>
           {
             waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
-              ? <>
-                <Headline>
-                  {`Sebelum ${waktuSolatToday[currentWaktuIndex + 1].name} dilaungkan`}
-                </Headline>
-                <SubHeadline>
-                  Telah Masuk Waktu
-                  {' '}
-                  <NextSolat name={waktuSolatToday[currentWaktuIndex].name} />
-                  {' '}
-                  di
-                  {' '}
-                  <SolatLocation name={location.name} onClick={chooseLocation} />
-                </SubHeadline>
-                </>
-              : <Headline>
-                Sebelum Masuk Waktu
-                {' '}
-                <NextSolat name={waktuSolatToday[currentWaktuIndex + 1].name} />
-                {' '}
-                di
-                {' '}
-                <SolatLocation name={location.name} onClick={chooseLocation} />
-                <ChangeLocationButton onClick={chooseLocation} />
-                </Headline>
+              ? <TextOfIqamahAndCurrentSolat
+                currentWaktuSolatName={waktuSolatToday[currentWaktuIndex].name}
+                currentWaktuName={waktuSolatToday[currentWaktuIndex + 1].name}
+                locationName={location.name}
+                chooseLocation={chooseLocation}
+              />
+              : <TextOfNextSolat
+                nextWaktuSolatName={waktuSolatToday[currentWaktuIndex + 1].name}
+                locationName={location.name}
+                chooseLocation={chooseLocation}
+              />
             }
           <SameZone
             othersLocationInSameZone={location.othersInSameZone}

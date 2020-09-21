@@ -80,10 +80,10 @@ const SameZoneDiv = styled.div`
 
 const SameZone = (props: SameZoneProps) => (
   <SameZoneDiv>
-    {props.hideSameZoneDesc
-    || <div>
-      dan kawasan-kawasan yang sama waktu dengannya
-    </div>}
+    {
+    props.hideSameZoneDesc
+    || <div> dan kawasan-kawasan yang sama waktu dengannya</div>
+    }
     <div>
       {props.othersLocationInSameZone.join(' | ')}
     </div>
@@ -168,12 +168,58 @@ const ChangeLocationButton = (props: ChangeLocationButtonProps) => (
   </ChangeLocationButtonDiv>
 );
 
+
+// ------------------------
+
+interface textOfIqamahAndCurrentSolatProps {
+  currentWaktuSolatName: string,
+  currentWaktuName: string
+  locationName: string,
+  chooseLocation: (event: React.MouseEvent<HTMLSpanElement>) => void
+}
+
+const TextOfIqamahAndCurrentSolat = (props: textOfIqamahAndCurrentSolatProps) => (
+  <>
+    <Headline>
+      {`Sebelum ${props.currentWaktuName} dilaungkan`}
+    </Headline>
+    <SubHeadline>
+      Telah Masuk Waktu
+      {' '}
+      <NextSolat name={props.currentWaktuSolatName} />
+      {' '}
+      di
+      {' '}
+      <SolatLocation name={props.locationName} onClick={props.chooseLocation} />
+    </SubHeadline>
+  </>
+);
+
+interface textOfNextSolatProps {
+  nextWaktuSolatName: string,
+  locationName: string,
+  chooseLocation: (event: React.MouseEvent<HTMLSpanElement>) => void
+}
+
+const TextOfNextSolat = (props: textOfNextSolatProps) => (
+  <Headline>
+    Sebelum Masuk Waktu
+    {' '}
+    <NextSolat name={props.nextWaktuSolatName} />
+    {' '}
+    di
+    {' '}
+    <SolatLocation name={props.locationName} onClick={props.chooseLocation} />
+    <ChangeLocationButton onClick={props.chooseLocation} />
+  </Headline>
+);
+
 export {
   NextSolatAndLocation,
   SameZone,
   SolatLocation,
   NextSolat,
   ChangeLocationButton,
-  SubHeadline,
-  Headline,
+  TextOfIqamahAndCurrentSolat,
+  TextOfNextSolat,
 };
