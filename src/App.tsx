@@ -4,20 +4,19 @@
 import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import UrlParse from 'url-parse';
-import ReactGA from 'react-ga';
 
 import {
   convertTimestampToHumanTime,
   getNextSolatName,
-  getCurrentSolatName,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logCurrentCountdown,
+  getAmPm,
 } from './utils/helpers';
 import { WaktuSolatDiv } from './WaktuSolatDiv';
 import { SettingButton } from './SettingButton';
 import {
-  NextSolatAndLocation, SameZone, NextSolat,
-  SolatLocation, ChangeLocationButton,
+  NextSolatAndLocation, SameZone,
+  TextOfIqamahAndCurrentSolat, TextOfNextSolat,
 } from './NextSolatAndLocation';
 import { SponsorText } from './SponsorText';
 import Header from './Header';
@@ -27,49 +26,17 @@ import AboutModal from './AboutModal';
 import SettingSidebarModal from './SettingSidebarModal';
 import Countdown from './Countdown';
 import ChooseLocationModal from './ChooseLocationModal';
+import { ZoneLocationInterface, LOADING } from './interfaces';
+import { Waktu, initializeWaktuSolatData, initializeWaktuIqamahData } from './WaktuModel';
+import { initializeLocation, LocationDetail } from './LocationModel';
+import { Analytics } from './Analytics';
 
-const apiURL = 'https://solatapi.fajarhac.com';
-const youtubeVideoId = 'PFd8dbaxQc4';
+const apiURL: string = 'https://solatapi.fajarhac.com';
+const youtubeVideoId: string = 'PFd8dbaxQc4';
 
-enum LOADING {
-  START,
-  PROGRESS,
-  DONE
-}
+const initialWaktuSolatDanIqamahToday: Array<Waktu> = initializeWaktuSolatData();
 
-interface MyType {
-  [key: string]: number;
-}
-
-const currentTimestamp: number = (new Date()).getTime();
-
-const initialWaktuSolatToday: MyType = {
-  datestamp: currentTimestamp,
-  imsak: currentTimestamp,
-  subuh: currentTimestamp,
-  syuruk: currentTimestamp,
-  zohor: currentTimestamp,
-  asar: currentTimestamp,
-  maghrib: currentTimestamp,
-  isyak: currentTimestamp,
-  subuh_tomorrow: currentTimestamp,
-};
-
-interface LocationDetail {
-  id: string;
-  name: string;
-  state: string;
-  zone: string;
-  othersInSameZone: Array<string>;
-}
-
-const initialLocation: LocationDetail = {
-  id: 'kuala-lumpur_wilayah',
-  name: 'Kuala Lumpur',
-  state: 'Wilayah',
-  zone: 'wly01',
-  othersInSameZone: ['PUTRAJAYA', 'KUALA LUMPUR'],
-};
+const initialLocation: LocationDetail = initializeLocation();
 
 const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
 const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-sponsor-footer');
@@ -77,16 +44,16 @@ const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-spon
 ReactModal.setAppElement('#root');
 
 function App() {
-  const [seconds, setSeconds] = useState(0);
-  const [nextSolat, setNextSolat] = useState('subuh');
+  const [nextSolat, setNextSolat] = useState<string>('subuh');
+  const [currentWaktuIndex, setCurrentWaktuIndex] = useState<number>(0);
 
-  const [countdownHour, setCountdownHour] = useState(0);
-  const [countdownMinutes, setCountdownMinutes] = useState(0);
-  const [countdownSeconds, setCountdownSeconds] = useState(0);
+  const [countdownHour, setCountdownHour] = useState<number>(0);
+  const [countdownMinutes, setCountdownMinutes] = useState<number>(0);
+  const [countdownSeconds, setCountdownSeconds] = useState<number>(0);
 
-  const [waktuSolatToday, setWaktuSolatToday] = useState(initialWaktuSolatToday);
-  const [location, setLocation] = useState(initialLocation);
-  const [isLoading, setIsLoading] = useState(LOADING.START);
+  const [waktuSolatToday, setWaktuSolatToday] = useState<Waktu[]>(initialWaktuSolatDanIqamahToday);
+  const [location, setLocation] = useState<LocationDetail>(initialLocation);
+  const [isLoading, setIsLoading] = useState<LOADING>(LOADING.START);
 
   // modal states
   const [showLocationModal, setShowLocationModal] = useState(false);
@@ -100,28 +67,39 @@ function App() {
   const [hideSameZoneDesc, setHideSameZoneDesc] = useState(initialStateHideSameZoneDesc);
   const [hideSponsorFooter, setHideSponsorFooter] = useState(initialStateHideSponsorFooter);
 
-  function calculateCountdown(nextSolatName: string) {
+  function calculateCountdown(waktuIndex: number) {
     const current = new Date();
-    // console.log(current.getTime());
-    const nextSolatTime = waktuSolatToday[nextSolatName];
-    const countdownInSeconds = ((nextSolatTime * 1000) - current.getTime()) / 1000;
-    const currentSolatTime = waktuSolatToday[getCurrentSolatName(nextSolatName)];
+    const currentTime = current.getTime();
 
-    // change to next solat
+    const allWaktu = waktuSolatToday;
+    const currentWaktu = allWaktu[waktuIndex];
+    const currentWaktuTime = currentWaktu.timestamp;
+    const nextWaktu = allWaktu[waktuIndex + 1];
+    const nextWaktuTime = nextWaktu.timestamp;
+    const countdownInSeconds = nextWaktuTime - (currentTime / 1000);
+
+    // Change to next solat
     if (countdownInSeconds <= 0) {
+      setIsLoading(LOADING.PROGRESS);
       setNextSolat(getNextSolatName(nextSolat));
+      setCurrentWaktuIndex(waktuIndex + 1);
+    } else {
+      setIsLoading(LOADING.DONE);
     }
 
     // Display azan video when azan is just in 3 minutes
+    const timeElapsedFromLastSolat: number = (currentTime / 1000) - currentWaktuTime;
     if (
       isLoading === LOADING.DONE
-      && (current.getTime() - (currentSolatTime * 1000)) / 1000 <= (3 * 60)
+      && timeElapsedFromLastSolat <= (3 * 60)
     ) {
-      if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
-        setShowAzan(true);
-        setTimeout(() => {
-          setShowAzan(false);
-        }, 5 * 60 * 1000);
+      // if (nextSolat.toLowerCase() !== 'imsak' || nextSolat.toLowerCase() !== 'syuruk') {
+      if (currentWaktu.type === 'solat') {
+        // setShowAzan(true);
+        // setTimeout(() => {
+        //   setShowAzan(false);
+        // }, 5 * 60 * 1000);
+        console.log('#---- Show Azan #');
       }
     }
 
@@ -132,15 +110,10 @@ function App() {
   }
 
   useInterval(() => {
-    if (seconds >= 59) {
-      setSeconds(0);
-    } else {
-      setSeconds(seconds + 1);
-    }
-    calculateCountdown(nextSolat);
+    calculateCountdown(currentWaktuIndex);
   }, 1000);
 
-  // request solat time from API, then set the time
+  // Request solat time from API, then set the time
   useEffect(() => {
     setIsLoading(LOADING.PROGRESS);
     const url = UrlParse(window.location.href);
@@ -174,14 +147,23 @@ function App() {
         return prayerTimes;
       })
       .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${locationZone}`)]))
-      .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([todayPrayerTimes, tomorrowPrayerTimesResponse.json()]))
+      .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([
+        todayPrayerTimes,
+        tomorrowPrayerTimesResponse.json(),
+      ]))
       .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
         const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
-        setWaktuSolatToday({
-          ...todayPrayerTimes,
-          subuh_tomorrow: subuhTomorrow,
-        });
-        console.log(tomorrowPrayerTimes);
+        const allPrayerTimes = { ...todayPrayerTimes, subuh_tomorrow: subuhTomorrow };
+
+        const updatedSolatTimes = initialWaktuSolatDanIqamahToday
+          .map(({ timestamp, id, ...waktu }) => ({ ...waktu, id, timestamp: allPrayerTimes[id] }));
+
+        const updatedSolatAndIqamahTimes = updatedSolatTimes
+          .concat(getIqamahTimes(updatedSolatTimes))
+          .sort((waktuA, waktuB) => waktuA.timestamp - waktuB.timestamp);
+
+        setWaktuSolatToday(updatedSolatAndIqamahTimes);
+        // console.log(tomorrowPrayerTimes);
         setIsLoading(LOADING.DONE);
       })
       .catch((err) => { console.log(err); });
@@ -190,43 +172,27 @@ function App() {
     };
   }, [location.zone]);
 
-  useEffect(() => {
-    const currentTimestampInSeconds = Math.floor((new Date()).getTime() / 1000);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { imsak, datestamp, ...tempWaktuSolatToday } = waktuSolatToday;
-    tempWaktuSolatToday.now = currentTimestampInSeconds;
-    const timeArray = Object.entries(tempWaktuSolatToday);
-    const sortedTimeArray = timeArray.sort(([keyA, valueA], [keyB, valueB]) => (valueA >= valueB ? 1 : -1));
-    // console.log(sortedTimeArray);
-    const indexOfNextSolat = sortedTimeArray.findIndex((solatTime) => solatTime.includes('now')) + 1;
-    setNextSolat(sortedTimeArray[indexOfNextSolat][0]);
-    // console.log(indexOfNextSolat);
-  }, [waktuSolatToday, waktuSolatToday.imsak]);
+  function getIqamahTimes(allSolatTimesData: Waktu[]): Waktu[] {
+    // get from config - show iqamah or not
+    // const showIqamah: boolean = true;
+
+    // inject iqamah data for every solat
+    const iqamahTimes: Waktu[] = initializeWaktuIqamahData(allSolatTimesData);
+
+    return iqamahTimes;
+  }
 
   const chooseLocation = () => {
     console.info('SHOW Modal to choose location');
-
     setShowLocationModal(true);
   };
-
-  interface ZoneLocationInterface {
-    id: string,
-    zone: string,
-    lokasi: string,
-    negeri: string,
-    othersInSameZone: Array<string>,
-  }
 
   const changeLocation = (zone: ZoneLocationInterface) => {
     const url = UrlParse(window.location.href);
     url.set('pathname', `/${zone.id}`);
     // window.location.href = url.href;
     window.history.replaceState('', '', `${url.href}`);
-    ReactGA.event({
-      category: 'Location',
-      action: 'Change Location',
-      label: zone.lokasi,
-    });
+    Analytics.changeLocationEvent(zone.lokasi);
     setLocation({
       id: zone.id,
       name: zone.lokasi,
@@ -259,17 +225,24 @@ function App() {
         />
 
         <NextSolatAndLocation>
-          <div>
-            Sebelum Masuk Waktu
-            {' '}
-            <NextSolat name={nextSolat} />
-            {' '}
-            di
-            {' '}
-            <SolatLocation name={location.name} onClick={chooseLocation} />
-            <ChangeLocationButton onClick={chooseLocation} />
-          </div>
-          <SameZone othersLocationInSameZone={location.othersInSameZone} hideSameZoneDesc={hideSameZoneDesc} />
+          {
+            waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
+              ? <TextOfIqamahAndCurrentSolat
+                currentWaktuSolatName={waktuSolatToday[currentWaktuIndex].name}
+                currentWaktuName={waktuSolatToday[currentWaktuIndex + 1].name}
+                locationName={location.name}
+                chooseLocation={chooseLocation}
+              />
+              : <TextOfNextSolat
+                nextWaktuSolatName={waktuSolatToday[currentWaktuIndex + 1].name}
+                locationName={location.name}
+                chooseLocation={chooseLocation}
+              />
+            }
+          <SameZone
+            othersLocationInSameZone={location.othersInSameZone}
+            hideSameZoneDesc={hideSameZoneDesc}
+          />
         </NextSolatAndLocation>
       </div>
 
@@ -291,22 +264,20 @@ function App() {
 
       <footer style={{ position: 'fixed', bottom: '0' }}>
         <div style={{ display: 'flex' }}>
-          {[
-            'imsak',
-            'subuh',
-            'syuruk',
-            'zohor',
-            'asar',
-            'maghrib',
-            'isyak',
-          ].map((solat) => (
-            <WaktuSolatDiv
-              key={solat}
-              name={solat.toUpperCase()}
-              time={isLoading === LOADING.DONE ? convertTimestampToHumanTime(waktuSolatToday[solat]) : '--:--'}
-              ampm="am"
-            />
-          ))}
+          {
+            waktuSolatToday
+              .filter(((waktu) => waktu.type === 'solat' || waktu.type === 'syuruk'))
+              .map((waktu) => (
+                <WaktuSolatDiv
+                  key={waktu.id}
+                  name={waktu.name.toUpperCase()}
+                  time={isLoading === LOADING.DONE
+                    ? convertTimestampToHumanTime(waktu.timestamp)
+                    : '--:--'}
+                  ampm={isLoading === LOADING.DONE ? getAmPm(waktu.timestamp) : ''}
+                />
+              ))
+          }
         </div>
         {
         hideSponsorFooter
