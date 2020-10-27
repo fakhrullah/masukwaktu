@@ -21,10 +21,25 @@ interface ChooseLocationModalProps {
 
 const Row = styled.div`
   display: flex;
+  flex-direction: row;
+
+  .state-name {
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
   padding: 16px;
   border: solid 1px #f3f3f3;
   & > div:first-child {
     min-width: 120px;
+  }
+
+  @media screen and (max-width: 678px) {
+    flex-direction: column;
+    padding: 8px;
+    border: none;
+
   }
 `;
 
@@ -58,7 +73,7 @@ const ChooseLocationModal = ({
     {Object.entries(groupedZonesByStates.groupByStates).map(([state, zones]) => (
       <Row key={state.toLowerCase()}>
         <div>
-          <span>{state}</span>
+          <span className="state-name">{state}</span>
         </div>
         <div>
           {zones.map((zone) => (
