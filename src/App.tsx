@@ -267,10 +267,11 @@ function App() {
           {
             waktuSolatToday
               .filter(((waktu) => waktu.type === 'solat' || waktu.type === 'syuruk'))
-              .map((waktu) => (
+              .map((waktu, index) => (
                 <WaktuSolatDiv
                   key={waktu.id}
                   name={waktu.name.toUpperCase()}
+                  isActive={waktuSolatToday[currentWaktuIndex].id === waktu.id}
                   time={isLoading === LOADING.DONE
                     ? convertTimestampToHumanTime(waktu.timestamp)
                     : '--:--'}
