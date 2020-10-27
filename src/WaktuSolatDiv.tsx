@@ -7,6 +7,7 @@ const WaktuSolat = styled.div`
   width: calc(100vw/7);
   text-align: center;
   padding: 16px 0;
+  position: relative;
   .name {
     color: ${(props) => ThemesConfig[props.theme.main].waktuSolatColor};
     font-size: 18px;
@@ -34,14 +35,25 @@ const WaktuSolat = styled.div`
   }
 `;
 
+const CurrentHighlight = styled.div`
+  background-color: ${(props) => ThemesConfig[props.theme.main].waktuSolatBackground};
+  height: 20px;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: 100%;
+`;
+
 interface WaktuSolatDivProp{
   name: string;
   time: string;
   ampm: string;
+  isActive: boolean;
 }
 
 const WaktuSolatDiv = (prop: WaktuSolatDivProp) => (
   <WaktuSolat>
+    {prop.isActive && <CurrentHighlight />}
     <div className="name">{prop.name || '0'}</div>
     <div>
       <span className="time">{prop.time}</span>
