@@ -11,7 +11,7 @@ import { ThemesConfig } from './themes/themes';
 
 import './index.css';
 
-const DEFAULT_THEME = 'light';
+const DEFAULT_THEME = 'dark';
 
 ReactGA.initialize('UA-42750664-2', {
   debug: window.location.hostname.indexOf('localhost') >= 0,
