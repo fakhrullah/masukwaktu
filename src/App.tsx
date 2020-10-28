@@ -74,7 +74,7 @@ function App() {
     const allWaktu = waktuSolatToday;
     const currentWaktu = allWaktu[waktuIndex];
     const currentWaktuTime = currentWaktu.timestamp;
-    const nextWaktu = allWaktu[waktuIndex + 1];
+    const nextWaktu = getNextSolat(waktuIndex);
     const nextWaktuTime = nextWaktu.timestamp;
     const countdownInSeconds = nextWaktuTime - (currentTime / 1000);
 
@@ -174,7 +174,11 @@ function App() {
         const sortedSolatAndIqamahTimesAndNowTime = updatedSolatAndIqamahTimes
           .concat(now)
           .sort((waktuA, waktuB) => waktuA.timestamp - waktuB.timestamp);
-        const countedCurrentWaktuIndex = sortedSolatAndIqamahTimesAndNowTime.findIndex((waktu) => waktu.id === 'now') - 1;
+        const nowIndex = sortedSolatAndIqamahTimesAndNowTime
+          .findIndex((waktu) => waktu.id === 'now');
+        const countedCurrentWaktuIndex = nowIndex === 0
+          ? updatedSolatAndIqamahTimes.length - 1
+          : nowIndex - 1;
 
         setWaktuSolatToday(updatedSolatAndIqamahTimes);
         setCurrentWaktuIndex(countedCurrentWaktuIndex);
@@ -198,6 +202,11 @@ function App() {
     return iqamahTimes;
   }
 
+  function getNextSolat(currentWaktuSolatIndex : number) : Waktu {
+    return currentWaktuSolatIndex === waktuSolatToday.length - 1
+      ? waktuSolatToday[0]
+      : waktuSolatToday[currentWaktuSolatIndex + 1];
+  }
   const chooseLocation = () => {
     console.info('SHOW Modal to choose location');
     setShowLocationModal(true);
@@ -242,15 +251,15 @@ function App() {
 
         <NextSolatAndLocation>
           {
-            waktuSolatToday[currentWaktuIndex + 1].type === 'iqamah'
+            getNextSolat(currentWaktuIndex).type === 'iqamah'
               ? <TextOfIqamahAndCurrentSolat
                 currentWaktuSolatName={waktuSolatToday[currentWaktuIndex].name}
-                currentWaktuName={waktuSolatToday[currentWaktuIndex + 1].name}
+                currentWaktuName={getNextSolat(currentWaktuIndex).name}
                 locationName={location.name}
                 chooseLocation={chooseLocation}
               />
               : <TextOfNextSolat
-                nextWaktuSolatName={waktuSolatToday[currentWaktuIndex + 1].name}
+                nextWaktuSolatName={getNextSolat(currentWaktuIndex).name}
                 locationName={location.name}
                 chooseLocation={chooseLocation}
               />
