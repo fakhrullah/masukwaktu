@@ -6,7 +6,7 @@ export interface Waktu {
   timestamp: number;
 }
 
-export type WaktuType = 'solat' | 'iqamah' | 'imsak' | 'syuruk';
+export type WaktuType = 'solat' | 'iqamah' | 'imsak' | 'syuruk' | 'now';
 
 const initializeWaktuSolatData = () : Waktu[] => {
   const currentTimestamp = new Date().getTime();
