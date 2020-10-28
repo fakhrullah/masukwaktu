@@ -175,9 +175,10 @@ function App() {
           .concat(now)
           .sort((waktuA, waktuB) => waktuA.timestamp - waktuB.timestamp);
         const countedCurrentWaktuIndex = sortedSolatAndIqamahTimesAndNowTime.findIndex((waktu) => waktu.id === 'now') - 1;
-        setCurrentWaktuIndex(countedCurrentWaktuIndex);
 
         setWaktuSolatToday(updatedSolatAndIqamahTimes);
+        setCurrentWaktuIndex(countedCurrentWaktuIndex);
+
         // console.log(tomorrowPrayerTimes);
         setIsLoading(LOADING.DONE);
       })
