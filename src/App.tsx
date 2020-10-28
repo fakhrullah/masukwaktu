@@ -174,7 +174,7 @@ function App() {
         const sortedSolatAndIqamahTimesAndNowTime = updatedSolatAndIqamahTimes
           .concat(now)
           .sort((waktuA, waktuB) => waktuA.timestamp - waktuB.timestamp);
-        const countedCurrentWaktuIndex = sortedSolatAndIqamahTimesAndNowTime.findIndex((waktu) => waktu.id === 'now');
+        const countedCurrentWaktuIndex = sortedSolatAndIqamahTimesAndNowTime.findIndex((waktu) => waktu.id === 'now') - 1;
         setCurrentWaktuIndex(countedCurrentWaktuIndex);
 
         setWaktuSolatToday(updatedSolatAndIqamahTimes);
