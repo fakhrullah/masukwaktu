@@ -155,12 +155,27 @@ function App() {
         const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
         const allPrayerTimes = { ...todayPrayerTimes, subuh_tomorrow: subuhTomorrow };
 
+        // Combined today solat and tomorrow Subuh
         const updatedSolatTimes = initialWaktuSolatDanIqamahToday
           .map(({ timestamp, id, ...waktu }) => ({ ...waktu, id, timestamp: allPrayerTimes[id] }));
 
+        // Combined with iqamah times
         const updatedSolatAndIqamahTimes = updatedSolatTimes
           .concat(getIqamahTimes(updatedSolatTimes))
           .sort((waktuA, waktuB) => waktuA.timestamp - waktuB.timestamp);
+
+        // set current waktu based on current time
+        const now : Waktu = {
+          id: 'now',
+          name: 'now',
+          type: 'now',
+          timestamp: new Date().getTime() / 1000,
+        };
+        const sortedSolatAndIqamahTimesAndNowTime = updatedSolatAndIqamahTimes
+          .concat(now)
+          .sort((waktuA, waktuB) => waktuA.timestamp - waktuB.timestamp);
+        const countedCurrentWaktuIndex = sortedSolatAndIqamahTimesAndNowTime.findIndex((waktu) => waktu.id === 'now');
+        setCurrentWaktuIndex(countedCurrentWaktuIndex);
 
         setWaktuSolatToday(updatedSolatAndIqamahTimes);
         // console.log(tomorrowPrayerTimes);
