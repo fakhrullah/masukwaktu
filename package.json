@@ -1,6 +1,6 @@
 {
   "name": "masukwaktu",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "private": true,
   "dependencies": {
     "date-fns": "^2.28.0",
