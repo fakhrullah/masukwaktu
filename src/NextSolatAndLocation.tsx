@@ -171,14 +171,14 @@ const ChangeLocationButton = (props: ChangeLocationButtonProps) => (
 
 // ------------------------
 
-interface textOfIqamahAndCurrentSolatProps {
+interface TextOfIqamahAndCurrentSolatProps {
   currentWaktuSolatName: string,
   currentWaktuName: string
   locationName: string,
   chooseLocation: (event: React.MouseEvent<HTMLSpanElement>) => void
 }
 
-const TextOfIqamahAndCurrentSolat = (props: textOfIqamahAndCurrentSolatProps) => (
+const TextOfIqamahAndCurrentSolat = (props: TextOfIqamahAndCurrentSolatProps) => (
   <>
     <Headline>
       {`Sebelum ${props.currentWaktuName} dilaungkan`}
@@ -195,13 +195,13 @@ const TextOfIqamahAndCurrentSolat = (props: textOfIqamahAndCurrentSolatProps) =>
   </>
 );
 
-interface textOfNextSolatProps {
+interface TextOfNextSolatProps {
   nextWaktuSolatName: string,
   locationName: string,
   chooseLocation: (event: React.MouseEvent<HTMLSpanElement>) => void
 }
 
-const TextOfNextSolat = (props: textOfNextSolatProps) => (
+const TextOfNextSolat = (props: TextOfNextSolatProps) => (
   <Headline>
     Sebelum Masuk Waktu
     {' '}

@@ -4,9 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import UrlParse from 'url-parse';
-
+import { addDays, format as dateFormat } from 'date-fns';
 import {
-  convertTimestampToHumanTime,
   getNextSolatName,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logCurrentCountdown,
@@ -32,6 +31,7 @@ import { initializeLocation, LocationDetail } from './LocationModel';
 import { Analytics } from './Analytics';
 
 const apiURL: string = 'https://solatapi.fajarhac.com';
+// const apiURL: string = 'http://localhost:4000';
 const youtubeVideoId: string = 'PFd8dbaxQc4';
 
 const initialWaktuSolatDanIqamahToday: Array<Waktu> = initializeWaktuSolatData();
@@ -76,7 +76,10 @@ function App() {
     const currentWaktuTime = currentWaktu.timestamp;
     const nextWaktu = getNextSolat(waktuIndex);
     const nextWaktuTime = nextWaktu.timestamp;
-    const countdownInSeconds = nextWaktuTime - (currentTime / 1000);
+    // const countdownInSeconds = nextWaktuTime - (currentTime / 1000);
+    const countdownInSeconds = (nextWaktuTime - currentTime) / 1000;
+    // console.log(nextWaktuTime, ' ---  ', currentTime);
+    // console.log(nextWaktuTime - currentTime);
 
     // Change to next solat
     if (countdownInSeconds <= 0) {
@@ -135,28 +138,37 @@ function App() {
       }
     }
 
-    fetch(`${apiURL}/times/today.json?zone=${locationZone}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { date, ...prayerTimes } = data.prayer_times;
-        // setWaktuSolatToday({
-        //   ...prayerTimes,
-        // });
-        console.log(data);
-        return prayerTimes;
+    const today = new Date();
+    const tomorrow = addDays(today, 1);
+    const from = dateFormat(today, 'dd-MM-yyyy');
+    const to = dateFormat(tomorrow, 'dd-MM-yyyy');
+    const getSolatTodayAndTomorrowUrl: string = `${apiURL}/times?zone=${locationZone}&from=${from}&to=${to}`;
+
+    fetch(getSolatTodayAndTomorrowUrl)
+      .then((response) => {
+        const data = response.json();
+        // console.log(data);
+        return data;
       })
-      .then((prayerTimes) => Promise.all([prayerTimes, fetch(`${apiURL}/times/tomorrow.json?zone=${locationZone}`)]))
-      .then(([todayPrayerTimes, tomorrowPrayerTimesResponse]) => Promise.all([
-        todayPrayerTimes,
-        tomorrowPrayerTimesResponse.json(),
-      ]))
+      .then((data: { status: string, results?: object[], message?: string }) => {
+        if (data.status === 'failed') throw new Error(data.message || 'Error api');
+        if (!data.results) {
+          throw new Error('Data not found');
+        } else {
+          return [data.results[0], data.results[1]];
+        }
+      })
       .then(([todayPrayerTimes, tomorrowPrayerTimes]) => {
-        const subuhTomorrow = tomorrowPrayerTimes.prayer_times.subuh;
+        // @ts-ignore:next-line
+        const subuhTomorrow = tomorrowPrayerTimes.subuh;
+
         const allPrayerTimes = { ...todayPrayerTimes, subuh_tomorrow: subuhTomorrow };
 
+        // console.log(allPrayerTimes);
+
         // Combined today solat and tomorrow Subuh
-        const updatedSolatTimes = initialWaktuSolatDanIqamahToday
+        const updatedSolatTimes: Waktu[] = initialWaktuSolatDanIqamahToday
+          // @ts-ignore:next-line
           .map(({ timestamp, id, ...waktu }) => ({ ...waktu, id, timestamp: allPrayerTimes[id] }));
 
         // Combined with iqamah times
@@ -169,11 +181,14 @@ function App() {
           id: 'now',
           name: 'now',
           type: 'now',
-          timestamp: new Date().getTime() / 1000,
+          timestamp: new Date().getTime(),
         };
-        const sortedSolatAndIqamahTimesAndNowTime = updatedSolatAndIqamahTimes
+        const sortedSolatAndIqamahTimesAndNowTime: Waktu[] = updatedSolatAndIqamahTimes
           .concat(now)
           .sort((waktuA, waktuB) => waktuA.timestamp - waktuB.timestamp);
+
+        console.log(sortedSolatAndIqamahTimesAndNowTime);
+
         const nowIndex = sortedSolatAndIqamahTimesAndNowTime
           .findIndex((waktu) => waktu.id === 'now');
         const countedCurrentWaktuIndex = nowIndex === 0
@@ -298,7 +313,7 @@ function App() {
                   name={waktu.name.toUpperCase()}
                   isActive={waktuSolatToday[currentWaktuIndex].id === waktu.id}
                   time={isLoading === LOADING.DONE
-                    ? convertTimestampToHumanTime(waktu.timestamp)
+                    ? dateFormat(waktu.timestamp, 'K:mm')
                     : '--:--'}
                   ampm={isLoading === LOADING.DONE ? getAmPm(waktu.timestamp) : ''}
                 />

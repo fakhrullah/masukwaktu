@@ -28,7 +28,7 @@ const Label = styled.label`
   display: block;
   cursor: pointer;
   padding: 8px 0px;
-`
+`;
 
 const initialStateHideSameZoneDesc: boolean = !!localStorage.getItem('hide-same-zone-desc');
 const initialStateHideSponsorFooter: boolean = !!localStorage.getItem('hide-sponsor-footer');
