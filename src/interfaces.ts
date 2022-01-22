@@ -10,5 +10,5 @@ export interface ZoneLocationInterface {
 export enum LOADING {
   START,
   PROGRESS,
-  DONE
+  DONE,
 }

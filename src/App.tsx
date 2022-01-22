@@ -150,7 +150,7 @@ function App() {
         // console.log(data);
         return data;
       })
-      .then((data: {status: string, results?: object[], message?: string}) => {
+      .then((data: { status: string, results?: object[], message?: string }) => {
         if (data.status === 'failed') throw new Error(data.message || 'Error api');
         if (!data.results) {
           throw new Error('Data not found');
